@@ -23,15 +23,15 @@ export default {
       );
       camera.position.set(4.2, -0.05, -0.27);
 
-      const pointLight1 = this.createPointLight(3, -1, 3, 0xffd3c2, 15, 0);
-      const pointLight2 = this.createPointLight(-3, -1, 3, 0xffd3c2, 15, 0);
-      const pointLight3 = this.createPointLight(2.5, -1, -2.5, 0xffd3c2, 15, 0);
+      const pointLight1 = this.createPointLight(3, -1, 3, 0xffd3c2, 17, 0);
+      const pointLight2 = this.createPointLight(-3, -1, 3, 0xffd3c2, 17, 0);
+      const pointLight3 = this.createPointLight(2.5, -1, -2.5, 0xffd3c2, 17, 0);
       const pointLight4 = this.createPointLight(
         -2.5,
         -1,
         -2.5,
         0xffd3c2,
-        15,
+        17,
         0
       );
       const pointLight5 = this.createPointLight(
@@ -39,7 +39,7 @@ export default {
         2.5,
         -0.1,
         0xffffff,
-        18,
+        25,
         0
       );
       pointLight5.castShadow = true;
