@@ -40,7 +40,7 @@ export default {
 
       //floor
       const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
+        new THREE.PlaneGeometry(200, 200),
         new THREE.MeshPhongMaterial({
           color: 0x9e9e9e,
         })
