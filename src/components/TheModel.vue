@@ -1,70 +1,50 @@
 <template>
-  <div>
-    <canvas id="canvas" class="fullscreen"></canvas>
-  </div>
+  <div id="container" class="fullscreen"></div>
 </template>
 <script>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import Stats from "three/addons/libs/stats.module.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 export default {
-  data() {},
   methods: {
     loadScene() {
       //variables
-      const stage = document.getElementById("canvas");
+      const container = document.getElementById("container");
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
         75,
-        stage.clientWidth / stage.clientHeight,
+        window.innerWidth / window.innerHeight,
         1,
         100
       );
       camera.position.set(4.2, -0.05, -0.27);
-
-      const pointLight1 = this.createPointLight(3, -1, 3, 0xffd3c2, 17, 0);
-      const pointLight2 = this.createPointLight(-3, -1, 3, 0xffd3c2, 17, 0);
-      const pointLight3 = this.createPointLight(2.5, -1, -2.5, 0xffd3c2, 17, 0);
-      const pointLight4 = this.createPointLight(
-        -2.5,
-        -1,
-        -2.5,
+      const hemisphereLight = new THREE.HemisphereLight(
+        0x8d7c7c,
         0xffd3c2,
-        17,
-        0
+        2.4
       );
-      const pointLight5 = this.createPointLight(
-        2.5,
-        2.5,
-        -0.1,
-        0xffffff,
-        25,
-        0
-      );
-      pointLight5.castShadow = true;
-      pointLight5.shadow.camera.top = 0;
-      pointLight5.shadow.camera.bottom = -3;
-      pointLight5.shadow.camera.left = -2;
-      pointLight5.shadow.camera.right = 2;
-      pointLight5.shadow.camera.near = 1;
-      pointLight5.shadow.camera.far = 1000;
-      scene.add(pointLight1);
-      scene.add(pointLight2);
-      scene.add(pointLight3);
-      scene.add(pointLight4);
-      scene.add(pointLight5);
+      scene.add(hemisphereLight);
+
+      const spotLight = new THREE.SpotLight(0xffffff, 25);
+      spotLight.angle = Math.PI / 3.5;
+      spotLight.penumbra = 0.6;
+      spotLight.castShadow = true;
+      spotLight.position.set(2.5, 2.5, -0.1);
+      scene.add(spotLight);
 
       //setup grid ground
       //scene.add(new THREE.GridHelper(5, 5));
 
       //floor
-      const geometry = new THREE.PlaneGeometry(2000, 2000, 8, 8);
-      const material = new THREE.MeshPhongMaterial({
-        color: 0x9e9e9e,
-        side: THREE.DoubleSide,
-      });
-      const floor = new THREE.Mesh(geometry, material);
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(100, 100),
+        new THREE.MeshPhongMaterial({
+          color: 0x9e9e9e,
+        })
+      );
       floor.receiveShadow = true;
       floor.rotateX(-Math.PI / 2);
       floor.position.y = -2.47;
@@ -72,14 +52,14 @@ export default {
 
       //render
       const renderer = new THREE.WebGLRenderer({
-        canvas: stage,
         alpha: true,
-        antialias: true
+        antialias: true,
       });
       renderer.shadowMap.enabled = true;
-      renderer.setSize(stage.clientWidth, stage.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
 
-      const controls = new OrbitControls(camera, stage);
+      const controls = new OrbitControls(camera, container);
       controls.minDistance = 2;
       controls.maxDistance = 4.7;
       // controls.addEventListener("change", (event) => {
@@ -95,12 +75,14 @@ export default {
         controls.update();
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
+        stats.update();
       };
 
       //load model
       const loader = new GLTFLoader();
+      loader.setDRACOLoader(new DRACOLoader().setDecoderPath('https://www.gstatic.com/draco/v1/decoders/'))
       loader.load(
-        "/models/sakura/sakura.glb",
+        "/models/sakura/test.glb",
         (gltf) => {
           gltf.scene.traverse((n) => {
             if (n.isMesh) {
@@ -129,14 +111,16 @@ export default {
           console.error(e);
         }
       );
-
+      const stats = new Stats();
+      container.appendChild(stats.dom);
       animate();
-    },
-    createPointLight(x, y, z, color, intensity, distance) {
-      const pointLight = new THREE.PointLight(color, intensity);
-      pointLight.position.set(x, y, z);
-      pointLight.distance = distance;
-      return pointLight;
+
+      const onWindowResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener("resize", onWindowResize);
     },
   },
   mounted() {
