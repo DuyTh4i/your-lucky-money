@@ -7,12 +7,29 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import Stats from "three/addons/libs/stats.module.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import { InteractionManager } from "three.interactive";
 
 export default {
+  data() {
+    return {
+      pin: 0.25,
+      coors: [
+        {
+          x: 0.2,
+          y: -0.42,
+          z: 0.15,
+        },
+        {
+          x: 0,
+          y: -0.35,
+          z: -0.4,
+        },
+      ],
+    };
+  },
   methods: {
     loadScene() {
-      //variables
-      const container = document.getElementById("container");
+      //basic setup
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
         75,
@@ -21,24 +38,42 @@ export default {
         100
       );
       camera.position.set(4.2, -0.05, -0.27);
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+      });
+      renderer.shadowMap.enabled = true;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      const container = document.getElementById("container");
+      container.appendChild(renderer.domElement);
+      const interactionManager = new InteractionManager(
+        renderer,
+        camera,
+        container
+      );
+      //auto resize
+      const onWindowResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener("resize", onWindowResize);
+
+      //light setup
       const hemisphereLight = new THREE.HemisphereLight(
         0x8d7c7c,
         0xffd3c2,
         2.4
       );
-      scene.add(hemisphereLight);
-
       const spotLight = new THREE.SpotLight(0xffffff, 25);
       spotLight.angle = Math.PI / 3.5;
       spotLight.penumbra = 0.6;
       spotLight.castShadow = true;
       spotLight.position.set(2.5, 2.5, -0.1);
       scene.add(spotLight);
+      scene.add(hemisphereLight);
 
-      //setup grid ground
-      //scene.add(new THREE.GridHelper(5, 5));
-
-      //floor
+      //floor setup
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(200, 200),
         new THREE.MeshPhongMaterial({
@@ -50,39 +85,25 @@ export default {
       floor.position.y = -2.47;
       scene.add(floor);
 
-      //render
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true,
-      });
-      renderer.shadowMap.enabled = true;
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      container.appendChild(renderer.domElement);
-
-      const controls = new OrbitControls(camera, container);
-      controls.minDistance = 2;
-      controls.maxDistance = 4.7;
-      // controls.addEventListener("change", (event) => {
-      //   console.log(controls.object.position);
-      // });
-      controls.enableDamping = true;
-      //controls.autoRotate = true;
-      controls.minPolarAngle = Math.PI / 4;
-      controls.maxPolarAngle = Math.PI / 1.7;
-      controls.enablePan = false;
-
-      const animate = () => {
-        controls.update();
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate);
-        stats.update();
-      };
+      //orbit setup
+      const orbitControls = new OrbitControls(camera, container);
+      orbitControls.minDistance = 2;
+      orbitControls.maxDistance = 4.7;
+      orbitControls.enableDamping = true;
+      //orbitControls.autoRotate = true;
+      orbitControls.minPolarAngle = Math.PI / 4;
+      orbitControls.maxPolarAngle = Math.PI / 1.7;
+      orbitControls.enablePan = false;
 
       //load model
       const loader = new GLTFLoader();
-      loader.setDRACOLoader(new DRACOLoader().setDecoderPath('https://www.gstatic.com/draco/v1/decoders/'))
+      loader.setDRACOLoader(
+        new DRACOLoader().setDecoderPath(
+          "https://www.gstatic.com/draco/v1/decoders/"
+        )
+      );
       loader.load(
-        "/models/sakura/test.glb",
+        "/models/sakura/sakura.glb",
         (gltf) => {
           gltf.scene.traverse((n) => {
             if (n.isMesh) {
@@ -111,16 +132,77 @@ export default {
           console.error(e);
         }
       );
+
+      //envelope setup
+      const itemFront = new THREE.TextureLoader().load("/texture/front.png");
+      const itemBack = new THREE.TextureLoader().load("/texture/back.png");
+      const itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
+      const itemMat = [
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ map: itemFront }),
+        new THREE.MeshPhongMaterial({ map: itemBack }),
+      ];
+      const ribbonMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+      this.coors.forEach((value) => {
+        const item = new THREE.Mesh(itemGeo, itemMat);
+        item.receiveShadow = true;
+        item.castShadow = true;
+        item.rotateY(Math.PI / 2);
+        item.position.set(value.x, value.y, value.z);
+        item.userData.prize = this.gacha();
+        item.addEventListener("click", (event) => {
+          console.log(event.target.userData.prize);
+        });
+        scene.add(item);
+        scene.add(
+          new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints([
+              new THREE.Vector3(value.x, value.y, value.z),
+              new THREE.Vector3(value.x, value.y + this.pin, value.z),
+            ]),
+            ribbonMat
+          )
+        );
+        interactionManager.add(item);
+      });
+
+      //debug
       const stats = new Stats();
       container.appendChild(stats.dom);
-      animate();
+      //scene.add(new THREE.GridHelper(5, 5));
+      //scene.add(new THREE.AxesHelper(3));
 
-      const onWindowResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+      const animate = () => {
+        orbitControls.update();
+        interactionManager.update();
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+        stats.update();
       };
-      window.addEventListener("resize", onWindowResize);
+
+      animate();
+    },
+    gacha() {
+      const rarity = {
+        20: 45,
+        50: 45,
+        10: 4.9,
+        100: 4.9,
+        200: 0.2,
+      };
+
+      const rand = Math.random() * 100000;
+      const percent = rand / 1000;
+      let result = null,
+        acc = 0;
+      Object.keys(rarity).forEach((key) => {
+        if (result === null && percent > 100 - rarity[key] - acc) result = key;
+        acc += parseFloat(rarity[key]);
+      });
+      return result;
     },
   },
   mounted() {
