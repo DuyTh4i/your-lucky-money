@@ -14,17 +14,69 @@ export default {
     return {
       pin: 0.25,
       coors: [
+      {
+          x: 0.1,
+          y: 0.57,
+          z: 1.5,
+        },
         {
           x: 0.2,
           y: -0.42,
           z: 0.15,
         },
         {
-          x: 0,
+          x: 0.38,
+          y: -0.6,
+          z: -0.2,
+        },
+        {
+          x: 0.58,
+          y: -0.6,
+          z: -0.7,
+        },
+        {
+          x: -0.05,
           y: -0.35,
-          z: -0.4,
+          z: -0.5,
+        },
+        {
+          x: -0.1,
+          y: -0.3,
+          z: -0.9,
+        },
+        {
+          x: -0.08,
+          y: -0.3,
+          z: -1.3,
+        },
+        {
+          x: 0,
+          y: -0.25,
+          z: -1.7,
+        },
+        {
+          x: 0.5,
+          y: -0.2,
+          z: -2.1,
+        },
+        {
+          x: 0.85,
+          y: -0.3,
+          z: -2.5,
+        },
+        {
+          x: 0.8,
+          y: -0.18,
+          z: -3,
         },
       ],
+      rarity : {
+        20: 45,
+        50: 45,
+        10: 4.9,
+        100: 4.9,
+        200: 0.2,
+      },
     };
   },
   methods: {
@@ -93,7 +145,7 @@ export default {
       //orbitControls.autoRotate = true;
       orbitControls.minPolarAngle = Math.PI / 4;
       orbitControls.maxPolarAngle = Math.PI / 1.7;
-      orbitControls.enablePan = false;
+      //orbitControls.enablePan = false;
 
       //load model
       const loader = new GLTFLoader();
@@ -170,37 +222,29 @@ export default {
       });
 
       //debug
-      const stats = new Stats();
-      container.appendChild(stats.dom);
-      //scene.add(new THREE.GridHelper(5, 5));
-      //scene.add(new THREE.AxesHelper(3));
+      //const stats = new Stats();
+      //container.appendChild(stats.dom);
+      // scene.add(new THREE.GridHelper(5, 5));
+      // scene.add(new THREE.AxesHelper(3));
 
       const animate = () => {
         orbitControls.update();
         interactionManager.update();
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
-        stats.update();
+        //stats.update();
       };
 
       animate();
     },
     gacha() {
-      const rarity = {
-        20: 45,
-        50: 45,
-        10: 4.9,
-        100: 4.9,
-        200: 0.2,
-      };
-
       const rand = Math.random() * 100000;
       const percent = rand / 1000;
       let result = null,
         acc = 0;
-      Object.keys(rarity).forEach((key) => {
-        if (result === null && percent > 100 - rarity[key] - acc) result = key;
-        acc += parseFloat(rarity[key]);
+      Object.keys(this.rarity).forEach((key) => {
+        if (result === null && percent > 100 - this.rarity[key] - acc) result = key;
+        acc += parseFloat(this.rarity[key]);
       });
       return result;
     },
