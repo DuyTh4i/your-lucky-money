@@ -1,10 +1,8 @@
 <template>
   <div id="container" class="fullscreen"></div>
-  <!-- <TheFooter></TheFooter> -->
 </template>
 <script>
 import * as THREE from "three";
-import TheFooter from "./TheFooter.vue";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import Stats from "three/addons/libs/stats.module.js";
@@ -12,9 +10,6 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
 
 export default {
-  components: {
-    TheFooter,
-  },
   data() {
     return {
       pin: 0.25,
