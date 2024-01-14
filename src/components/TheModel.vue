@@ -1,6 +1,6 @@
 <template>
   <div id="container" class="fullscreen"></div>
-  <TheFooter></TheFooter>
+  <!-- <TheFooter></TheFooter> -->
 </template>
 <script>
 import * as THREE from "three";
