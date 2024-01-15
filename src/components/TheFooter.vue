@@ -10,16 +10,16 @@
 
 <style scoped>
 #footer {
-  position: fixed;
-  bottom: 0;
-  width: 98%;
-  height: auto;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
 }
 .info {
   float: right;
   text-align: center;
   color: white;
-  font-size: 0.6em;
+  font-size: 0.8em;
+  font-family: 'something-strange';
 }
 a {
   color: white;
@@ -27,5 +27,9 @@ a {
 }
 a:hover {
   color: rgb(233, 34, 74);
+}
+@font-face {
+  font-family: something-strange;
+  src: url("./font/Something Strange.ttf");
 }
 </style>

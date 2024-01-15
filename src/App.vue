@@ -1,6 +1,6 @@
 <template>
   <TheModel></TheModel>
-  <!-- <TheFooter></TheFooter> -->
+  <TheFooter></TheFooter>
 </template>
 <script>
 import TheModel from "./components/TheModel.vue";

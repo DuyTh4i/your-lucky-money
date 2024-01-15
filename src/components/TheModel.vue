@@ -14,6 +14,41 @@ export default {
     return {
       pin: 0.25,
       coors: [
+      {
+          x: 0.5,
+          y: 1.02,
+          z: 1.9,
+        },
+        {
+          x: -0.7,
+          y: 1.17,
+          z: 1.75,
+        },
+        {
+          x: -1,
+          y: 1.1,
+          z: 1.1,
+        },
+        {
+          x: -1.2,
+          y: 0.86,
+          z: 0.7,
+        },
+        {
+          x: -0.95,
+          y: 1.1,
+          z: -0.3,
+        },
+        {
+          x: -1.09,
+          y: 0.88,
+          z: -1.2,
+        },
+        {
+          x: 0.25,
+          y: 0.82,
+          z: 1.73,
+        },
         {
           x: 0.1,
           y: 0.57,
@@ -55,10 +90,21 @@ export default {
           z: -1.7,
         },
         {
+          x: -0.3,
+          y: 0.29,
+          z: -1.9,
+        },
+        {
+          x: -0.55,
+          y: 0.44,
+          z: -2.2,
+        },
+        {
           x: 0.5,
           y: -0.2,
           z: -2.1,
         },
+        
         {
           x: 0.85,
           y: -0.3,
@@ -147,6 +193,20 @@ export default {
       orbitControls.maxPolarAngle = Math.PI / 1.7;
       //orbitControls.enablePan = false;
 
+      //envelope setup
+      const itemFront = new THREE.TextureLoader().load("/texture/front.png");
+      const itemBack = new THREE.TextureLoader().load("/texture/back.png");
+      const itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
+      const itemMat = [
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
+        new THREE.MeshPhongMaterial({ map: itemFront }),
+        new THREE.MeshPhongMaterial({ map: itemBack }),
+      ];
+      const ribbonMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+
       //load model
       const loader = new GLTFLoader();
       loader.setDRACOLoader(
@@ -178,27 +238,8 @@ export default {
           model.position.x = model.position.x - center.x;
           model.position.y = model.position.y - center.y;
           model.position.z = model.position.z - center.z - 0.5;
-        },
-        undefined,
-        (e) => {
-          console.error(e);
-        }
-      );
 
-      //envelope setup
-      const itemFront = new THREE.TextureLoader().load("/texture/front.png");
-      const itemBack = new THREE.TextureLoader().load("/texture/back.png");
-      const itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
-      const itemMat = [
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ map: itemFront }),
-        new THREE.MeshPhongMaterial({ map: itemBack }),
-      ];
-      const ribbonMat = new THREE.LineBasicMaterial({ color: 0x000000 });
-      this.coors.forEach((value) => {
+          this.coors.forEach((value) => {
         const item = new THREE.Mesh(itemGeo, itemMat);
         item.receiveShadow = true;
         item.castShadow = true;
@@ -220,6 +261,12 @@ export default {
         );
         interactionManager.add(item);
       });
+        },
+        undefined,
+        (e) => {
+          console.error(e);
+        }
+      );
 
       //debug
       //const stats = new Stats();
