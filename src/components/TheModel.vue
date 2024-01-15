@@ -14,7 +14,7 @@ export default {
     return {
       pin: 0.25,
       coors: [
-      {
+        {
           x: 0.5,
           y: 1.02,
           z: 1.9,
@@ -104,7 +104,7 @@ export default {
           y: -0.2,
           z: -2.1,
         },
-        
+
         {
           x: 0.85,
           y: -0.3,
@@ -132,7 +132,7 @@ export default {
       const camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
-        1,
+        0.1,
         100
       );
       camera.position.set(4.2, -0.05, -0.27);
@@ -206,6 +206,8 @@ export default {
         new THREE.MeshPhongMaterial({ map: itemBack }),
       ];
       const ribbonMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+      let boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
+      scene.add(boxHelper);
 
       //load model
       const loader = new GLTFLoader();
@@ -240,27 +242,28 @@ export default {
           model.position.z = model.position.z - center.z - 0.5;
 
           this.coors.forEach((value) => {
-        const item = new THREE.Mesh(itemGeo, itemMat);
-        item.receiveShadow = true;
-        item.castShadow = true;
-        item.rotateY(Math.PI / 2);
-        item.position.set(value.x, value.y, value.z);
-        item.userData.prize = this.gacha();
-        item.addEventListener("click", (event) => {
-          console.log(event.target.userData.prize);
-        });
-        scene.add(item);
-        scene.add(
-          new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints([
-              new THREE.Vector3(value.x, value.y, value.z),
-              new THREE.Vector3(value.x, value.y + this.pin, value.z),
-            ]),
-            ribbonMat
-          )
-        );
-        interactionManager.add(item);
-      });
+            const item = new THREE.Mesh(itemGeo, itemMat);
+            item.receiveShadow = true;
+            item.castShadow = true;
+            item.rotateY(Math.PI / 2);
+            item.position.set(value.x, value.y, value.z);
+            item.userData.prize = this.gacha();
+            item.addEventListener("click", (event) => {
+              console.log(event.target.userData.prize);
+              boxHelper.setFromObject(item);
+            });
+            scene.add(item);
+            scene.add(
+              new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                  new THREE.Vector3(value.x, value.y, value.z),
+                  new THREE.Vector3(value.x, value.y + this.pin, value.z),
+                ]),
+                ribbonMat
+              )
+            );
+            interactionManager.add(item);
+          });
         },
         undefined,
         (e) => {
