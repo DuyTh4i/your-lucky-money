@@ -30,6 +30,6 @@ a:hover {
 }
 @font-face {
   font-family: something-strange;
-  src: url("./font/sts.ttf");
+  src: url("/font/sts.ttf");
 }
 </style>
