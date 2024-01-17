@@ -1,5 +1,7 @@
 <template>
-  <TheModel></TheModel>
+  <n-dialog-provider>
+    <TheModel></TheModel>
+  </n-dialog-provider>
   <TheFooter></TheFooter>
 </template>
 <script>

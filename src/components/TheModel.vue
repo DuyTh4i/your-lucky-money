@@ -1,7 +1,7 @@
 <template>
   <div id="container" class="fullscreen"></div>
-  <div v-if="isPopup === true" class="filter"></div>
-  <div v-if="confirm === true" id="container1" class="fullscreen"></div>
+  <div v-if="isFilter === true" class="filter"></div>
+  <div v-if="isConfirmed === true" id="container1" class="fullscreen"></div>
 </template>
 <script>
 import * as THREE from "three";
@@ -11,12 +11,13 @@ import Stats from "three/addons/libs/stats.module.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
 import TWEEN from "@tweenjs/tween.js";
+import { useDialog } from "naive-ui";
 
 export default {
   data() {
     return {
-      isPopup: false,
-      confirm: false,
+      isFilter: false,
+      isConfirmed: false,
       pin: 0.25,
       coors: [
         {
@@ -128,6 +129,7 @@ export default {
         100: 4.9,
         200: 0.2,
       },
+      dialog: useDialog(),
     };
   },
   methods: {
@@ -341,8 +343,10 @@ export default {
         item.position.set(value.x, value.y - 0.35, value.z);
         item.userData.prize = this.gacha();
         item.addEventListener("click", (event) => {
-          if (event.target == boxHelper.object) this.isPopup = true;
-          else boxHelper.setFromObject(item);
+          if (event.target == boxHelper.object) {
+            this.isPopup = true;
+            this.confirmItem();
+          } else boxHelper.setFromObject(item);
           console.log(event.target.userData.prize);
         });
         interactionManager.add(item);
@@ -371,6 +375,17 @@ export default {
       setTimeout(() => {
         new TWEEN.Tween(ribbonMat).to({ opacity: 1 }, 500).start();
       }, 400);
+    },
+    confirmItem() {
+      this.dialog.warning({
+        title: "Xác nhận",
+        content: "Bạn muốn mở bao lì xì này?",
+        positiveText: "Mở",
+        negativeText: "Không",
+        onPositiveClick: () => {
+          this.isFilter = true;
+        },
+      });
     },
   },
   mounted() {
@@ -406,7 +421,11 @@ export default {
   animation-duration: 0.5s;
 }
 @keyframes example {
-  from {opacity: 0;}
-  to {opacity: 0.6}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.6;
+  }
 }
 </style>
