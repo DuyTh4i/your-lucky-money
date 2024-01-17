@@ -1,7 +1,7 @@
 <template>
   <div id="container" class="fullscreen"></div>
   <div v-if="isFilter === true" class="filter"></div>
-  <div v-if="isConfirmed === true" id="container1" class="fullscreen"></div>
+  <GetPrize v-if="isConfirmed === true"></GetPrize>
 </template>
 <script>
 import * as THREE from "three";
@@ -12,8 +12,10 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
 import TWEEN from "@tweenjs/tween.js";
 import { useDialog } from "naive-ui";
+import GetPrize from "./GetPrize.vue";
 
 export default {
+  components: { GetPrize },
   data() {
     return {
       isFilter: false,
@@ -281,16 +283,17 @@ export default {
           model.position.x = model.position.x - center.x;
           model.position.y = model.position.y - center.y;
           model.position.z = model.position.z - center.z - 0.5;
-
-          this.generateEnvelope(
-            itemGeo,
-            itemMat,
-            ribbonMat,
-            boxHelper,
-            interactionManager,
-            envelopes,
-            ribbons
-          );
+          setTimeout(() => {
+            this.generateEnvelope(
+              itemGeo,
+              itemMat,
+              ribbonMat,
+              boxHelper,
+              interactionManager,
+              envelopes,
+              ribbons
+            );
+          }, 550);
         },
         undefined,
         (e) => {
@@ -384,6 +387,7 @@ export default {
         negativeText: "Không",
         onPositiveClick: () => {
           this.isFilter = true;
+          this.isConfirmed = true;
         },
       });
     },
