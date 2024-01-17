@@ -1,5 +1,7 @@
 <template>
   <div id="container" class="fullscreen"></div>
+  <div v-if="isPopup === true" class="filter"></div>
+  <div v-if="confirm === true" id="container1" class="fullscreen"></div>
 </template>
 <script>
 import * as THREE from "three";
@@ -8,10 +10,13 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import Stats from "three/addons/libs/stats.module.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
+import TWEEN from "@tweenjs/tween.js";
 
 export default {
   data() {
     return {
+      isPopup: false,
+      confirm: false,
       pin: 0.25,
       coors: [
         {
@@ -149,6 +154,7 @@ export default {
         camera,
         container
       );
+
       //auto resize
       const onWindowResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -198,16 +204,49 @@ export default {
       const itemBack = new THREE.TextureLoader().load("/texture/back.png");
       const itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
       const itemMat = [
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ color: 0xdb0614 }),
-        new THREE.MeshPhongMaterial({ map: itemFront }),
-        new THREE.MeshPhongMaterial({ map: itemBack }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          map: itemFront,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          map: itemBack,
+          transparent: true,
+          opacity: 0,
+        }),
       ];
-      const ribbonMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+      const ribbonMat = new THREE.LineBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0,
+      });
       let boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
       scene.add(boxHelper);
+
+      const envelopes = new THREE.Group();
+      const ribbons = new THREE.Group();
+      scene.add(envelopes);
+      scene.add(ribbons);
 
       //load model
       const loader = new GLTFLoader();
@@ -241,29 +280,15 @@ export default {
           model.position.y = model.position.y - center.y;
           model.position.z = model.position.z - center.z - 0.5;
 
-          this.coors.forEach((value) => {
-            const item = new THREE.Mesh(itemGeo, itemMat);
-            item.receiveShadow = true;
-            item.castShadow = true;
-            item.rotateY(Math.PI / 2);
-            item.position.set(value.x, value.y, value.z);
-            item.userData.prize = this.gacha();
-            item.addEventListener("click", (event) => {
-              console.log(event.target.userData.prize);
-              boxHelper.setFromObject(item);
-            });
-            scene.add(item);
-            scene.add(
-              new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints([
-                  new THREE.Vector3(value.x, value.y, value.z),
-                  new THREE.Vector3(value.x, value.y + this.pin, value.z),
-                ]),
-                ribbonMat
-              )
-            );
-            interactionManager.add(item);
-          });
+          this.generateEnvelope(
+            itemGeo,
+            itemMat,
+            ribbonMat,
+            boxHelper,
+            interactionManager,
+            envelopes,
+            ribbons
+          );
         },
         undefined,
         (e) => {
@@ -274,17 +299,17 @@ export default {
       //debug
       //const stats = new Stats();
       //container.appendChild(stats.dom);
-      // scene.add(new THREE.GridHelper(5, 5));
-      // scene.add(new THREE.AxesHelper(3));
+      //scene.add(new THREE.GridHelper(5, 5));
+      //scene.add(new THREE.AxesHelper(3));
 
       const animate = () => {
+        requestAnimationFrame(animate);
+        TWEEN.update();
         orbitControls.update();
         interactionManager.update();
         renderer.render(scene, camera);
-        requestAnimationFrame(animate);
         //stats.update();
       };
-
       animate();
     },
     gacha() {
@@ -298,6 +323,54 @@ export default {
         acc += parseFloat(this.rarity[key]);
       });
       return result;
+    },
+    generateEnvelope(
+      itemGeo,
+      itemMat,
+      ribbonMat,
+      boxHelper,
+      interactionManager,
+      envelopes,
+      ribbons
+    ) {
+      this.coors.forEach((value) => {
+        const item = new THREE.Mesh(itemGeo, itemMat);
+        item.receiveShadow = true;
+        item.castShadow = true;
+        item.rotateY(Math.PI / 2);
+        item.position.set(value.x, value.y - 0.35, value.z);
+        item.userData.prize = this.gacha();
+        item.addEventListener("click", (event) => {
+          if (event.target == boxHelper.object) this.isPopup = true;
+          else boxHelper.setFromObject(item);
+          console.log(event.target.userData.prize);
+        });
+        interactionManager.add(item);
+        envelopes.add(item);
+        ribbons.add(
+          new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints([
+              new THREE.Vector3(value.x, value.y, value.z),
+              new THREE.Vector3(value.x, value.y + this.pin, value.z),
+            ]),
+            ribbonMat
+          )
+        );
+        this.attachEnvelopes(envelopes, itemMat, ribbonMat);
+      });
+    },
+    attachEnvelopes(envelopes, itemMat, ribbonMat) {
+      envelopes.children.forEach((item) => {
+        new TWEEN.Tween(item.position)
+          .to({ y: item.position.y + 0.35 }, 800)
+          .start();
+      });
+      itemMat.forEach((mat) => {
+        new TWEEN.Tween(mat).to({ opacity: 1 }, 800).start();
+      });
+      setTimeout(() => {
+        new TWEEN.Tween(ribbonMat).to({ opacity: 1 }, 500).start();
+      }, 400);
     },
   },
   mounted() {
@@ -316,5 +389,24 @@ export default {
   bottom: 0;
   right: 0;
   overflow: auto;
+}
+
+.filter {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  background-color: black;
+  opacity: 0.6;
+  animation-name: example;
+  animation-duration: 0.5s;
+}
+@keyframes example {
+  from {opacity: 0;}
+  to {opacity: 0.6}
 }
 </style>
