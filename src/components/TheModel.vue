@@ -1,9 +1,8 @@
 <template>
-  <div id="container" class="fullscreen" ></div>
+  <div id="container" class="fullscreen"></div>
   <div class="filter" v-if="isOpen === true">
-    <GetPrize @update-open="isOpen = !isOpen"></GetPrize>
+    <GetPrize @update-open="resetEnvelopes()"></GetPrize>
   </div>
-  
 </template>
 <script>
 import * as THREE from "three";
@@ -17,12 +16,16 @@ import { useDialog } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
 
 export default {
-  components:{GetPrize},
+  components: { GetPrize },
   data() {
     return {
       isOpen: false,
-      pin: 0.25,
-      coors: [
+    };
+  },
+  methods: {
+    init() {
+      this.pin = 0.25;
+      this.coors = [
         {
           x: 0.5,
           y: 1.02,
@@ -123,47 +126,95 @@ export default {
           y: -0.18,
           z: -3,
         },
-      ],
-      rarity: {
+      ];
+      this.rarity = {
         20: 45,
         50: 45,
         10: 4.9,
         100: 4.9,
         200: 0.2,
-      },
-      dialog: useDialog(),
-    };
-  },
-  methods: {
-    loadScene() {
-      //basic setup
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
+      };
+      this.dialog = useDialog();
+      this.itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
+      this.itemMat = [
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          color: 0xdb0614,
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          map: new THREE.TextureLoader().load("/texture/front.png"),
+          transparent: true,
+          opacity: 0,
+        }),
+        new THREE.MeshPhongMaterial({
+          map: new THREE.TextureLoader().load("/texture/back.png"),
+          transparent: true,
+          opacity: 0,
+        }),
+      ];
+      this.ribbonMat = new THREE.LineBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0,
+      });
+      this.container = document.getElementById("container");
+      this.scene = new THREE.Scene();
+      this.envelopes = new THREE.Group();
+      this.ribbons = new THREE.Group();
+      this.boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
+      this.camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.1,
         100
       );
-      camera.position.set(4.2, -0.05, -0.27);
-      const renderer = new THREE.WebGLRenderer({
+      this.renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: true,
       });
-      renderer.shadowMap.enabled = true;
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      const container = document.getElementById("container");
-      container.appendChild(renderer.domElement);
-      const interactionManager = new InteractionManager(
-        renderer,
-        camera,
-        container
+      this.orbitControls = new OrbitControls(this.camera, this.container);
+
+      this.scene.add(this.boxHelper);
+      this.scene.add(this.envelopes);
+      this.scene.add(this.ribbons);
+
+      this.interactionManager = new InteractionManager(
+        this.renderer,
+        this.camera,
+        this.container
       );
+    },
+
+    loadScene() {
+      //basic setup
+      this.camera.position.set(4.2, -0.05, -0.27);
+
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+      container.appendChild(this.renderer.domElement);
 
       //auto resize
       const onWindowResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
       };
       window.addEventListener("resize", onWindowResize);
 
@@ -178,8 +229,8 @@ export default {
       spotLight.penumbra = 0.6;
       spotLight.castShadow = true;
       spotLight.position.set(2.5, 2.5, -0.1);
-      scene.add(spotLight);
-      scene.add(hemisphereLight);
+      this.scene.add(spotLight);
+      this.scene.add(hemisphereLight);
 
       //floor setup
       const floor = new THREE.Mesh(
@@ -191,66 +242,16 @@ export default {
       floor.receiveShadow = true;
       floor.rotateX(-Math.PI / 2);
       floor.position.y = -2.47;
-      scene.add(floor);
+      this.scene.add(floor);
 
       //orbit setup
-      const orbitControls = new OrbitControls(camera, container);
-      orbitControls.minDistance = 2;
-      orbitControls.maxDistance = 4.7;
-      orbitControls.enableDamping = true;
-      //orbitControls.autoRotate = true;
-      orbitControls.minPolarAngle = Math.PI / 4;
-      orbitControls.maxPolarAngle = Math.PI / 1.7;
-      //orbitControls.enablePan = false;
-
-      //envelope setup
-      const itemFront = new THREE.TextureLoader().load("/texture/front.png");
-      const itemBack = new THREE.TextureLoader().load("/texture/back.png");
-      const itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
-      const itemMat = [
-        new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
-          transparent: true,
-          opacity: 0,
-        }),
-        new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
-          transparent: true,
-          opacity: 0,
-        }),
-        new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
-          transparent: true,
-          opacity: 0,
-        }),
-        new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
-          transparent: true,
-          opacity: 0,
-        }),
-        new THREE.MeshPhongMaterial({
-          map: itemFront,
-          transparent: true,
-          opacity: 0,
-        }),
-        new THREE.MeshPhongMaterial({
-          map: itemBack,
-          transparent: true,
-          opacity: 0,
-        }),
-      ];
-      const ribbonMat = new THREE.LineBasicMaterial({
-        color: 0x000000,
-        transparent: true,
-        opacity: 0,
-      });
-      let boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
-      scene.add(boxHelper);
-
-      const envelopes = new THREE.Group();
-      const ribbons = new THREE.Group();
-      scene.add(envelopes);
-      scene.add(ribbons);
+      this.orbitControls.minDistance = 2;
+      this.orbitControls.maxDistance = 4.7;
+      this.orbitControls.enableDamping = true;
+      //this.orbitControls.autoRotate = true;
+      this.orbitControls.minPolarAngle = Math.PI / 4;
+      this.orbitControls.maxPolarAngle = Math.PI / 1.7;
+      //this.orbitControls.enablePan = false;
 
       //load model
       const loader = new GLTFLoader();
@@ -268,7 +269,7 @@ export default {
               n.receiveShadow = true;
             }
           });
-          scene.add(gltf.scene);
+          this.scene.add(gltf.scene);
           const model = gltf.scene;
 
           // // Calculate the bounding box of the model (but no a single Mesh) so that the whole model is centered
@@ -283,17 +284,7 @@ export default {
           model.position.x = model.position.x - center.x;
           model.position.y = model.position.y - center.y;
           model.position.z = model.position.z - center.z - 0.5;
-          setTimeout(() => {
-            this.generateEnvelope(
-              itemGeo,
-              itemMat,
-              ribbonMat,
-              boxHelper,
-              interactionManager,
-              envelopes,
-              ribbons
-            );
-          }, 550);
+          this.resetEnvelopes();
         },
         undefined,
         (e) => {
@@ -304,18 +295,10 @@ export default {
       //debug
       //const stats = new Stats();
       //container.appendChild(stats.dom);
-      //scene.add(new THREE.GridHelper(5, 5));
-      //scene.add(new THREE.AxesHelper(3));
+      //this.scene.add(new THREE.GridHelper(5, 5));
+      //this.scene.add(new THREE.AxesHelper(3));
 
-      const animate = () => {
-        requestAnimationFrame(animate);
-        TWEEN.update();
-        orbitControls.update();
-        interactionManager.update();
-        renderer.render(scene, camera);
-        //stats.update();
-      };
-      animate();
+      this.animate();
     },
     gacha() {
       const rand = Math.random() * 100000;
@@ -329,56 +312,91 @@ export default {
       });
       return result;
     },
-    generateEnvelope(
-      itemGeo,
-      itemMat,
-      ribbonMat,
-      boxHelper,
-      interactionManager,
-      envelopes,
-      ribbons
-    ) {
-      this.coors.forEach((value) => {
-        const item = new THREE.Mesh(itemGeo, itemMat);
-        item.receiveShadow = true;
-        item.castShadow = true;
-        item.rotateY(Math.PI / 2);
-        item.position.set(value.x, value.y - 0.35, value.z);
-        item.userData.prize = this.gacha();
-        item.addEventListener("click", (event) => {
-          if (event.target == boxHelper.object) {
-            this.isPopup = true;
-            this.confirmItem();
-          } else boxHelper.setFromObject(item);
-          console.log(event.target.userData.prize);
+    generateEnvelope() {
+      if (this.envelopes.children.length > 0) {
+        console.log(this.envelopes.children.length);
+        this.detachEnvelopes();
+      }
+      setTimeout(() => {
+        this.coors.forEach((value) => {
+          const item = new THREE.Mesh(this.itemGeo, this.itemMat);
+          item.receiveShadow = true;
+          item.castShadow = true;
+          item.rotateY(Math.PI / 2);
+          item.position.set(value.x, value.y - 0.35, value.z);
+          item.userData.prize = this.gacha();
+          item.addEventListener("click", (event) => {
+            if (event.target == this.boxHelper.object) {
+              this.isPopup = true;
+              this.confirmItem();
+            } else this.boxHelper.setFromObject(item);
+            console.log(event.target.userData.prize);
+          });
+          this.interactionManager.add(item);
+          this.envelopes.add(item);
+          this.ribbons.add(
+            new THREE.Line(
+              new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(value.x, value.y, value.z),
+                new THREE.Vector3(value.x, value.y + this.pin, value.z),
+              ]),
+              this.ribbonMat
+            )
+          );
         });
-        interactionManager.add(item);
-        envelopes.add(item);
-        ribbons.add(
-          new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints([
-              new THREE.Vector3(value.x, value.y, value.z),
-              new THREE.Vector3(value.x, value.y + this.pin, value.z),
-            ]),
-            ribbonMat
-          )
-        );
-        this.attachEnvelopes(envelopes, itemMat, ribbonMat);
-      });
+        this.attachEnvelopes();
+      }, 1100);
     },
-    attachEnvelopes(envelopes, itemMat, ribbonMat) {
-      envelopes.children.forEach((item) => {
+    animate() {
+      requestAnimationFrame(this.animate);
+      TWEEN.update();
+      this.orbitControls.update();
+      this.interactionManager.update();
+      this.renderer.render(this.scene, this.camera);
+      //stats.update();
+    },
+    attachEnvelopes() {
+      this.envelopes.children.forEach((item) => {
         new TWEEN.Tween(item.position)
           .to({ y: item.position.y + 0.35 }, 800)
           .start();
       });
-      itemMat.forEach((mat) => {
+      this.itemMat.forEach((mat) => {
         new TWEEN.Tween(mat).to({ opacity: 1 }, 800).start();
       });
       setTimeout(() => {
-        new TWEEN.Tween(ribbonMat).to({ opacity: 1 }, 500).start();
+        new TWEEN.Tween(this.ribbonMat).to({ opacity: 1 }, 500).start();
       }, 400);
     },
+
+    detachEnvelopes() {
+      this.envelopes.children.forEach((item) => {
+        new TWEEN.Tween(item.position)
+          .to({ y: item.position.y - 0.35 }, 800)
+          .start();
+      });
+      this.itemMat.forEach((mat) => {
+        new TWEEN.Tween(mat).to({ opacity: 0 }, 800).start();
+      });
+      setTimeout(() => {
+        new TWEEN.Tween(this.ribbonMat).to({ opacity: 0 }, 500).start();
+      }, 400);
+      setTimeout(()=>{
+        this.scene.remove(this.envelopes)
+        this.scene.remove(this.ribbons)
+        this.envelopes.clear();
+        this.ribbons.clear();
+        this.scene.add(this.envelopes)
+        this.scene.add(this.ribbons)
+      }, 800)
+
+    },
+
+    resetEnvelopes() {
+      this.isOpen = false;
+      this.generateEnvelope();
+    },
+
     confirmItem() {
       this.dialog.warning({
         title: "Xác nhận",
@@ -392,6 +410,7 @@ export default {
     },
   },
   mounted() {
+    this.init();
     this.loadScene();
   },
 };
@@ -430,5 +449,4 @@ export default {
     opacity: 0.6;
   }
 }
-
 </style>
