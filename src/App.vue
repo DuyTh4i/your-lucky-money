@@ -7,6 +7,7 @@
 <script>
 import TheModel from "./components/TheModel.vue";
 import TheFooter from "./components/TheFooter.vue";
+
 export default {
   components: {
     TheModel,

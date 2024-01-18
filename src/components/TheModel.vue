@@ -1,7 +1,9 @@
 <template>
-  <div id="container" class="fullscreen"></div>
-  <div v-if="isFilter === true" class="filter"></div>
-  <GetPrize v-if="isConfirmed === true"></GetPrize>
+  <div id="container" class="fullscreen" ></div>
+  <div class="filter" v-if="isOpen === true">
+    <GetPrize @update-open="isOpen = !isOpen"></GetPrize>
+  </div>
+  
 </template>
 <script>
 import * as THREE from "three";
@@ -15,11 +17,10 @@ import { useDialog } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
 
 export default {
-  components: { GetPrize },
+  components:{GetPrize},
   data() {
     return {
-      isFilter: false,
-      isConfirmed: false,
+      isOpen: false,
       pin: 0.25,
       coors: [
         {
@@ -112,7 +113,6 @@ export default {
           y: -0.2,
           z: -2.1,
         },
-
         {
           x: 0.85,
           y: -0.3,
@@ -386,8 +386,7 @@ export default {
         positiveText: "Mở",
         negativeText: "Không",
         onPositiveClick: () => {
-          this.isFilter = true;
-          this.isConfirmed = true;
+          this.isOpen = true;
         },
       });
     },
@@ -407,9 +406,8 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  overflow: auto;
+  overflow: hidden;
 }
-
 .filter {
   width: 100%;
   height: 100%;
@@ -418,7 +416,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  overflow: auto;
+  overflow: hidden;
   background-color: black;
   opacity: 0.6;
   animation-name: example;
@@ -432,4 +430,5 @@ export default {
     opacity: 0.6;
   }
 }
+
 </style>
