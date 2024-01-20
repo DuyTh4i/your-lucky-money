@@ -4,41 +4,75 @@
 </template>
 <script>
 import * as THREE from "three";
+import TWEEN from "@tweenjs/tween.js";
 
 export default {
   methods: {
-    updateIsOpen(){
-      this.$emit('update-open');
-    },
-    loadScene() {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
+    init() {
+      this.scene = new THREE.Scene();
+      this.camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.1,
         100
       );
-
-      camera.position.y = 5;
-      camera.lookAt(0, -5, 0);
-
-      const renderer = new THREE.WebGLRenderer({
+      this.renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: true,
       });
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      const container = document.getElementById("container1");
-      container.appendChild(renderer.domElement);
-      scene.add(new THREE.GridHelper(10, 10));
-      const animate = () => {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-      };
-      animate();
+      this.container = document.getElementById("container1");
     },
+    updateIsOpen() {
+      this.$emit("update-open");
+    },
+    loadScene() {
+      this.camera.position.y = 6;
+      this.camera.lookAt(0, -6, 0);
+
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+      this.container.appendChild(this.renderer.domElement);
+      //this.scene.add(new THREE.GridHelper(10, 10));
+      //this.scene.add(new THREE.AxesHelper(3))
+
+      const geometry = new THREE.BoxGeometry(5.2,0.1, 9.1);
+      const material = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/texture/front.png"), });
+      const cube = new THREE.Mesh(geometry, material);
+
+      cube.position.z=10
+      this.scene.add(cube);
+      const prize = new THREE.Mesh(
+        new THREE.PlaneGeometry(8, 3.7),
+        new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/texture/prize/100.png"), })
+      );
+      prize.position.z=9
+      this.scene.add(prize);
+      prize.rotateX(-Math.PI / 2);
+      prize.rotateZ(-Math.PI / 2);
+      this.showPrize(cube,prize)
+      this.animate();
+    },
+    animate() {
+      requestAnimationFrame(this.animate);
+      TWEEN.update();
+      this.renderer.render(this.scene, this.camera);
+    },
+    showPrize(cube, prize){
+      setTimeout(()=>{
+        new TWEEN.Tween(cube.position)
+          .to({ z: 5 }, 900)
+          .start();
+      }, 1000)
+      setTimeout(()=>{
+        new TWEEN.Tween(prize.position)
+          .to({ z: 1 }, 1500)
+          .start();
+      }, 2000)
+
+    }
   },
   mounted() {
+    this.init();
     this.loadScene();
   },
 };

@@ -18,7 +18,7 @@
   float: right;
   text-align: center;
   color: white;
-  font-size: 0.8em;
+  font-size: 0.7rem;
   font-family: 'something-strange';
 }
 a {

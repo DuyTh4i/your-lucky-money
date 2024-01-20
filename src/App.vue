@@ -1,8 +1,10 @@
 <template>
+  <div class="fullscreen">
   <n-dialog-provider>
     <TheModel></TheModel>
   </n-dialog-provider>
   <TheFooter></TheFooter>
+</div>
 </template>
 <script>
 import TheModel from "./components/TheModel.vue";
@@ -15,3 +17,14 @@ export default {
   },
 };
 </script>
+<style>
+.fullscreen {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+}</style>

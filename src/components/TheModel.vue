@@ -1,6 +1,7 @@
 <template>
   <div id="container" class="fullscreen"></div>
-  <div class="filter" v-if="isOpen === true">
+  <div v-if="isOpen === true">
+    <div class="filter"></div>
     <GetPrize @update-open="resetEnvelopes()"></GetPrize>
   </div>
 </template>
@@ -20,12 +21,8 @@ export default {
   data() {
     return {
       isOpen: false,
-    };
-  },
-  methods: {
-    init() {
-      this.pin = 0.25;
-      this.coors = [
+      pin: 0.25,
+      coors: [
         {
           x: 0.5,
           y: 1.02,
@@ -126,14 +123,20 @@ export default {
           y: -0.18,
           z: -3,
         },
-      ];
-      this.rarity = {
+      ],
+      rarity: {
         20: 45,
         50: 45,
         10: 4.9,
         100: 4.9,
         200: 0.2,
-      };
+      },
+    };
+  },
+  methods: {
+    init() {
+      this.envelopes = [];
+      this.ribbons = [];
       this.dialog = useDialog();
       this.itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
       this.itemMat = [
@@ -175,8 +178,6 @@ export default {
       });
       this.container = document.getElementById("container");
       this.scene = new THREE.Scene();
-      this.envelopes = new THREE.Group();
-      this.ribbons = new THREE.Group();
       this.boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
       this.camera = new THREE.PerspectiveCamera(
         75,
@@ -191,8 +192,6 @@ export default {
       this.orbitControls = new OrbitControls(this.camera, this.container);
 
       this.scene.add(this.boxHelper);
-      this.scene.add(this.envelopes);
-      this.scene.add(this.ribbons);
 
       this.interactionManager = new InteractionManager(
         this.renderer,
@@ -313,8 +312,7 @@ export default {
       return result;
     },
     generateEnvelope() {
-      if (this.envelopes.children.length > 0) {
-        console.log(this.envelopes.children.length);
+      if (this.envelopes.length > 0) {
         this.detachEnvelopes();
       }
       setTimeout(() => {
@@ -329,12 +327,15 @@ export default {
             if (event.target == this.boxHelper.object) {
               this.isPopup = true;
               this.confirmItem();
-            } else this.boxHelper.setFromObject(item);
+            } else {
+              this.boxHelper.visible = true;
+              this.boxHelper.setFromObject(item);
+            }
             console.log(event.target.userData.prize);
           });
           this.interactionManager.add(item);
-          this.envelopes.add(item);
-          this.ribbons.add(
+          this.envelopes.push(item);
+          this.ribbons.push(
             new THREE.Line(
               new THREE.BufferGeometry().setFromPoints([
                 new THREE.Vector3(value.x, value.y, value.z),
@@ -344,19 +345,22 @@ export default {
             )
           );
         });
+        this.ribbons.forEach((rib) => this.scene.add(rib));
+        this.envelopes.forEach((env) => this.scene.add(env));
         this.attachEnvelopes();
-      }, 1100);
+      }, 1000);
     },
     animate() {
       requestAnimationFrame(this.animate);
       TWEEN.update();
       this.orbitControls.update();
       this.interactionManager.update();
+      this.renderer.renderLists.dispose();
       this.renderer.render(this.scene, this.camera);
       //stats.update();
     },
     attachEnvelopes() {
-      this.envelopes.children.forEach((item) => {
+      this.envelopes.forEach((item) => {
         new TWEEN.Tween(item.position)
           .to({ y: item.position.y + 0.35 }, 800)
           .start();
@@ -370,7 +374,8 @@ export default {
     },
 
     detachEnvelopes() {
-      this.envelopes.children.forEach((item) => {
+      this.boxHelper.visible = false;
+      this.envelopes.forEach((item) => {
         new TWEEN.Tween(item.position)
           .to({ y: item.position.y - 0.35 }, 800)
           .start();
@@ -381,15 +386,21 @@ export default {
       setTimeout(() => {
         new TWEEN.Tween(this.ribbonMat).to({ opacity: 0 }, 500).start();
       }, 400);
-      setTimeout(()=>{
-        this.scene.remove(this.envelopes)
-        this.scene.remove(this.ribbons)
-        this.envelopes.clear();
-        this.ribbons.clear();
-        this.scene.add(this.envelopes)
-        this.scene.add(this.ribbons)
-      }, 800)
-
+      setTimeout(() => {
+        this.envelopes.forEach((item) => {
+          this.interactionManager.remove(item);
+          item.removeFromParent();
+          item.geometry.dispose();
+          item.material.forEach((mat) => mat.dispose());
+        });
+        this.ribbons.forEach((item) => {
+          item.removeFromParent();
+          item.geometry.dispose();
+          item.material.dispose();
+        });
+        this.envelopes = [];
+        this.ribbons = [];
+      }, 810);
     },
 
     resetEnvelopes() {
@@ -417,16 +428,6 @@ export default {
 </script>
 
 <style scoped>
-.fullscreen {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow: hidden;
-}
 .filter {
   width: 100%;
   height: 100%;
