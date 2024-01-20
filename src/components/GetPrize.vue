@@ -7,6 +7,7 @@ import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
 
 export default {
+  props: ["prizeValue"],
   methods: {
     init() {
       this.scene = new THREE.Scene();
@@ -26,6 +27,7 @@ export default {
       this.$emit("update-open");
     },
     loadScene() {
+      console.log(this.prizeValue)
       this.camera.position.y = 6;
       this.camera.lookAt(0, -6, 0);
 
@@ -35,21 +37,27 @@ export default {
       //this.scene.add(new THREE.GridHelper(10, 10));
       //this.scene.add(new THREE.AxesHelper(3))
 
-      const geometry = new THREE.BoxGeometry(5.2,0.1, 9.1);
-      const material = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/texture/front.png"), });
+      const geometry = new THREE.BoxGeometry(4, 0.1, 7);
+      const material = new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load("/texture/front.png"),
+      });
       const cube = new THREE.Mesh(geometry, material);
 
-      cube.position.z=10
+      cube.position.z = 10;
       this.scene.add(cube);
       const prize = new THREE.Mesh(
         new THREE.PlaneGeometry(8, 3.7),
-        new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/texture/prize/100.png"), })
+        new THREE.MeshBasicMaterial({
+          map: new THREE.TextureLoader().load(
+            "/texture/prize/" + String(this.prizeValue) + ".png"
+          ),
+        })
       );
-      prize.position.z=9
+      prize.position.z = 9;
       this.scene.add(prize);
       prize.rotateX(-Math.PI / 2);
       prize.rotateZ(-Math.PI / 2);
-      this.showPrize(cube,prize)
+      this.showPrize(cube, prize);
       this.animate();
     },
     animate() {
@@ -57,19 +65,14 @@ export default {
       TWEEN.update();
       this.renderer.render(this.scene, this.camera);
     },
-    showPrize(cube, prize){
-      setTimeout(()=>{
-        new TWEEN.Tween(cube.position)
-          .to({ z: 5 }, 900)
-          .start();
-      }, 1000)
-      setTimeout(()=>{
-        new TWEEN.Tween(prize.position)
-          .to({ z: 1 }, 1500)
-          .start();
-      }, 2000)
-
-    }
+    showPrize(cube, prize) {
+      setTimeout(() => {
+        new TWEEN.Tween(cube.position).to({ z: 3.5 }, 900).start();
+      }, 1000);
+      setTimeout(() => {
+        new TWEEN.Tween(prize.position).to({ z: 1 }, 1500).start();
+      }, 2000);
+    },
   },
   mounted() {
     this.init();

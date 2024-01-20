@@ -2,7 +2,7 @@
   <div id="container" class="fullscreen"></div>
   <div v-if="isOpen === true">
     <div class="filter"></div>
-    <GetPrize @update-open="resetEnvelopes()"></GetPrize>
+    <GetPrize @update-open="resetEnvelopes()" :prizeValue="value"></GetPrize>
   </div>
 </template>
 <script>
@@ -20,6 +20,7 @@ export default {
   components: { GetPrize },
   data() {
     return {
+      value: null,
       isOpen: false,
       pin: 0.25,
       coors: [
@@ -326,6 +327,7 @@ export default {
           item.addEventListener("click", (event) => {
             if (event.target == this.boxHelper.object) {
               this.isPopup = true;
+              this.value = item.userData.prize
               this.confirmItem();
             } else {
               this.boxHelper.visible = true;
@@ -405,6 +407,7 @@ export default {
 
     resetEnvelopes() {
       this.isOpen = false;
+      this.value = null;
       this.generateEnvelope();
     },
 
