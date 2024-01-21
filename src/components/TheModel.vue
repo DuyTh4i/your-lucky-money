@@ -1,5 +1,60 @@
 <template>
-  <div id="container" class="fullscreen"></div>
+  <div id="container" class="fullscreen">
+    <n-row
+      gutter="2"
+      style="
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        cursor: pointer;
+        opacity: 0.9;
+        z-index: 10000;
+        user-select: none;
+      "
+    >
+      <n-col :span="3">
+        <n-space justify="center" style="background-color: rgba(255, 255, 255, 0.1); ">
+          <n-button v-if="logged === false">login</n-button>
+          <n-dropdown :options="options">
+            <n-avatar
+              v-if="logged === true"
+              round
+              size="large"
+              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+          </n-dropdown>
+        </n-space>
+
+        <div class="light-green">
+          <div
+            style="
+              display: table-cell;
+              vertical-align: middle;
+              user-select: none;
+            "
+          >
+            <n-flex vertical>
+              <ul v-for="(value, key) in rarity" style="list-style-type: none">
+                <li style="display: inline">
+                  <img
+                    style="width: 40%; vertical-align: middle"
+                    :src="'./texture/prize/' + String(key) + '.png'"
+                    alt=""
+                  />
+                  <span style="vertical-align: middle; margin-left: 20%; font-size: 1.3em; text-shadow: 1px 1px #000;" :class="'prize'+key" >
+                    {{ value }}%
+                  </span>
+                </li>
+              </ul>
+            </n-flex>
+          </div>
+        </div>
+      </n-col>
+    </n-row>
+  </div>
+
+  <div style="position: absolute; left: 3px; top: 3px"></div>
+
   <div v-if="isOpen === true">
     <div class="filter"></div>
     <GetPrize @update-open="resetEnvelopes()" :prizeValue="value"></GetPrize>
@@ -13,13 +68,48 @@ import Stats from "three/addons/libs/stats.module.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
 import TWEEN from "@tweenjs/tween.js";
-import { useDialog } from "naive-ui";
+import { useDialog, NIcon } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
+import { h, defineComponent } from "vue";
+import {
+  PersonCircleOutline as UserIcon,
+  Pencil as EditIcon,
+  LogOutOutline as LogoutIcon,
+} from "@vicons/ionicons5";
+const renderIcon = (icon) => {
+  return () => {
+    return h(NIcon, null, {
+      default: () => h(icon),
+    });
+  };
+};
 
 export default {
+  setup() {
+    return {
+      options: [
+        {
+          label: "Profile",
+          key: "profile",
+          icon: renderIcon(UserIcon),
+        },
+        {
+          label: "Edit Profile",
+          key: "editProfile",
+          icon: renderIcon(EditIcon),
+        },
+        {
+          label: "Logout",
+          key: "logout",
+          icon: renderIcon(LogoutIcon),
+        },
+      ],
+    };
+  },
   components: { GetPrize },
   data() {
     return {
+      logged: true,
       value: null,
       isOpen: false,
       pin: 0.25,
@@ -177,6 +267,7 @@ export default {
         transparent: true,
         opacity: 0,
       });
+      this.stats = new Stats();
       this.container = document.getElementById("container");
       this.scene = new THREE.Scene();
       this.boxHelper = new THREE.BoxHelper(undefined, 0xffffff);
@@ -293,8 +384,7 @@ export default {
       );
 
       //debug
-      //const stats = new Stats();
-      //container.appendChild(stats.dom);
+      //container.appendChild(this.stats.dom);
       //this.scene.add(new THREE.GridHelper(5, 5));
       //this.scene.add(new THREE.AxesHelper(3));
 
@@ -327,7 +417,7 @@ export default {
           item.addEventListener("click", (event) => {
             if (event.target == this.boxHelper.object) {
               this.isPopup = true;
-              this.value = item.userData.prize
+              this.value = item.userData.prize;
               this.confirmItem();
             } else {
               this.boxHelper.visible = true;
@@ -359,7 +449,7 @@ export default {
       this.interactionManager.update();
       this.renderer.renderLists.dispose();
       this.renderer.render(this.scene, this.camera);
-      //stats.update();
+      //this.stats.update();
     },
     attachEnvelopes() {
       this.envelopes.forEach((item) => {
@@ -452,5 +542,28 @@ export default {
   to {
     opacity: 0.6;
   }
+}
+.light-green {
+  display: table;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.prize10{
+  color: rgb(255, 208, 0);
+}
+.prize20{
+  color: rgb(0, 13, 255);
+}
+.prize50{
+  color: rgb(255, 0, 60);
+}
+.prize100{
+  color: rgb(13, 255, 0);
+}
+.prize200{
+  color: rgb(255, 145, 0);
+}
+.prize500{
+  color: rgb(0, 200, 255);
 }
 </style>

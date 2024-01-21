@@ -1,6 +1,7 @@
 <template>
-  <div id="container1" class="fullscreen"></div>
-  <n-button @click="updateIsOpen()" color="#ff69b4"> xác nhận</n-button>
+  <div id="container1" class="fullscreen">
+    <n-button @click="updateIsOpen()" color="#ff69b4"> xác nhận</n-button>
+  </div>
 </template>
 <script>
 import * as THREE from "three";
@@ -27,15 +28,19 @@ export default {
       this.$emit("update-open");
     },
     loadScene() {
-      console.log(this.prizeValue)
+      console.log(this.prizeValue);
       this.camera.position.y = 6;
       this.camera.lookAt(0, -6, 0);
+      const onWindowResize = () => {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener("resize", onWindowResize);
 
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       this.container.appendChild(this.renderer.domElement);
-      //this.scene.add(new THREE.GridHelper(10, 10));
-      //this.scene.add(new THREE.AxesHelper(3))
 
       const geometry = new THREE.BoxGeometry(4, 0.1, 7);
       const material = new THREE.MeshBasicMaterial({
@@ -58,8 +63,13 @@ export default {
       prize.rotateX(-Math.PI / 2);
       prize.rotateZ(-Math.PI / 2);
       this.showPrize(cube, prize);
+
+      //debug
+      //this.scene.add(new THREE.GridHelper(10, 10));
+      //this.scene.add(new THREE.AxesHelper(3))
       this.animate();
     },
+
     animate() {
       requestAnimationFrame(this.animate);
       TWEEN.update();

@@ -1,10 +1,10 @@
 <template>
   <div class="fullscreen">
-  <n-dialog-provider>
-    <TheModel></TheModel>
-  </n-dialog-provider>
+    <n-dialog-provider>
+      <TheModel></TheModel>
+    </n-dialog-provider>
+  </div>
   <TheFooter></TheFooter>
-</div>
 </template>
 <script>
 import TheModel from "./components/TheModel.vue";
@@ -27,4 +27,5 @@ export default {
   bottom: 0;
   right: 0;
   overflow: hidden;
-}</style>
+}
+</style>
