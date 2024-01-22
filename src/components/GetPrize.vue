@@ -1,6 +1,19 @@
 <template>
-  <div id="container1" class="fullscreen">
-    <n-button @click="updateIsOpen()" color="#ff69b4"> xác nhận</n-button>
+  <div id="container1" class="fullscreen1">
+    <n-button
+      style="
+        position: absolute;
+        left: 50%;
+      bottom: 15%;
+        transform: translateX(-50%);
+      "
+      v-if="showBut === true"
+      size="large"
+      @click="updateIsOpen()"
+      color="#ff69b4"
+    >
+      xác nhận</n-button
+    >
   </div>
 </template>
 <script>
@@ -8,6 +21,11 @@ import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
 
 export default {
+  data() {
+    return {
+      showBut: false,
+    };
+  },
   props: ["prizeValue"],
   methods: {
     init() {
@@ -25,6 +43,7 @@ export default {
       this.container = document.getElementById("container1");
     },
     updateIsOpen() {
+      this.showBut = false;
       this.$emit("update-open");
     },
     loadScene() {
@@ -82,6 +101,9 @@ export default {
       setTimeout(() => {
         new TWEEN.Tween(prize.position).to({ z: 1 }, 1500).start();
       }, 2000);
+      setTimeout(() => {
+        this.showBut = true;
+      }, 4500);
     },
   },
   mounted() {
@@ -91,14 +113,11 @@ export default {
 };
 </script>
 <style scoped>
-.fullscreen {
-  width: 100%;
+.fullscreen1 {
   height: 100%;
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
-  right: 0;
   overflow: hidden;
 }
 </style>
