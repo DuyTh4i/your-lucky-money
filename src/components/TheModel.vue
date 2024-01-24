@@ -13,13 +13,11 @@
       "
     >
       <n-col :span="3">
-        <n-space justify="center" style="background-color: rgba(255, 255, 255, 0.1); ">
-          <n-button v-if="logged === false">login</n-button>
+        <n-space justify="center">
           <n-dropdown :options="options">
             <n-avatar
-              v-if="logged === true"
               round
-              size="large"
+              :size="avatarSize"
               src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
             />
           </n-dropdown>
@@ -33,15 +31,23 @@
               user-select: none;
             "
           >
-            <n-flex vertical>
+            <n-flex vertical v-if="isPortrait === false">
               <ul v-for="(value, key) in rarity" style="list-style-type: none">
-                <li style="display: inline">
+                <li style="display: inline" v-if="value > 0">
                   <img
                     style="width: 40%; vertical-align: middle"
                     :src="'./texture/prize/' + String(key) + '.png'"
                     alt=""
                   />
-                  <span style="vertical-align: middle; margin-left: 20%; font-size: 1.3em; text-shadow: 1px 1px #000;" :class="'prize'+key" >
+                  <span
+                    style="
+                      vertical-align: middle;
+                      margin-left: 20%;
+                      font-size: 1.3em;
+                      text-shadow: 1px 1px #000;
+                    "
+                    :class="'prize' + key"
+                  >
                     {{ value }}%
                   </span>
                 </li>
@@ -109,6 +115,8 @@ export default {
   components: { GetPrize },
   data() {
     return {
+      avatarSize: "large",
+      isPortrait: false,
       logged: true,
       value: null,
       isOpen: false,
@@ -444,6 +452,13 @@ export default {
       }, 1000);
     },
     animate() {
+      if (window.innerHeight > window.innerWidth ||( window.innerWidth < 1280 || window.innerHeight < 720)) {
+        this.isPortrait = true;
+        this.avatarSize = "small";
+      } else {
+        this.avatarSize = "large";
+        this.isPortrait = false;
+      }
       requestAnimationFrame(this.animate);
       TWEEN.update();
       this.orbitControls.update();
@@ -547,24 +562,23 @@ export default {
 .light-green {
   display: table;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 0.1);
 }
-.prize10{
+.prize10 {
   color: rgb(255, 208, 0);
 }
-.prize20{
+.prize20 {
   color: rgb(0, 13, 255);
 }
-.prize50{
+.prize50 {
   color: rgb(255, 0, 60);
 }
-.prize100{
+.prize100 {
   color: rgb(13, 255, 0);
 }
-.prize200{
+.prize200 {
   color: rgb(255, 145, 0);
 }
-.prize500{
+.prize500 {
   color: rgb(0, 200, 255);
 }
 </style>
