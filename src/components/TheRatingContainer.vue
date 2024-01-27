@@ -1,7 +1,11 @@
 <template>
   <div class="containerLeft">
     <n-flex justify="center">
-      <n-dropdown :options="options" style="display: inline-block">
+      <n-dropdown
+        :options="options"
+        style="display: inline-block"
+        @select="selectMenu"
+      >
         <n-avatar
           round
           :size="avatarSize"
@@ -24,46 +28,61 @@
       </ul>
     </div>
   </div>
+  <n-modal v-model:show="showModal" preset="dialog" title="Dialog">
+    <template #header>
+      <div>title</div>
+    </template>
+    <div>content</div>
+    <template #action>
+      <div>action</div>
+    </template>
+  </n-modal>
 </template>
 
 <script>
 import { NIcon } from "naive-ui";
-import { h } from "vue";
+import { h, ref } from "vue";
 import {
   PersonCircleOutline as UserIcon,
   Pencil as EditIcon,
   LogOutOutline as LogoutIcon,
 } from "@vicons/ionicons5";
 
-const renderIcon = (icon) => {
-  return () => {
-    return h(NIcon, null, {
-      default: () => h(icon),
-    });
-  };
-};
 export default {
   props: ["username", "avatarSize", "isPortrait", "rarity"],
   data() {
     return {
+      showModal: ref(false),
       options: [
         {
           label: this.username,
           key: "username",
-          icon: renderIcon(UserIcon),
+          icon: this.renderIcon(UserIcon),
         },
         {
           label: "Cài đặt",
-          key: "editProfile",
-          icon: renderIcon(EditIcon),
+          key: "setting",
+          icon: this.renderIcon(EditIcon),
         },
         {
           label: "Đăng xuất",
           key: "logout",
-          icon: renderIcon(LogoutIcon),
+          icon: this.renderIcon(LogoutIcon),
         },
       ],
     };
+  },
+  methods: {
+    selectMenu(key) {
+      if(key === "setting") this.showModal = true
+    },
+    renderIcon(icon) {
+      return () => {
+        return h(NIcon, null, {
+          default: () => h(icon),
+        });
+      };
+    },
   },
 };
 </script>

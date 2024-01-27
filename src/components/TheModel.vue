@@ -170,12 +170,12 @@ export default {
           opacity: 0,
         }),
         new THREE.MeshPhongMaterial({
-          map: new THREE.TextureLoader().load("/texture/front.png"),
+          map: new THREE.TextureLoader().load("/texture/front.webp"),
           transparent: true,
           opacity: 0,
         }),
         new THREE.MeshPhongMaterial({
-          map: new THREE.TextureLoader().load("/texture/back.png"),
+          map: new THREE.TextureLoader().load("/texture/back.webp"),
           transparent: true,
           opacity: 0,
         }),
@@ -432,7 +432,8 @@ export default {
 
     confirmItem() {
       this.dialog.warning({
-        title: "Xác nhận",
+        showIcon: false,
+        transformOrigin: 'center',
         content: "Bạn muốn mở bao lì xì này?",
         positiveText: "Mở",
         negativeText: "Không",

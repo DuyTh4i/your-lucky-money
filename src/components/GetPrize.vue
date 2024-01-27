@@ -63,7 +63,7 @@ export default {
 
       const geometry = new THREE.BoxGeometry(4, 0.1, 7);
       const material = new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load("/texture/front.png"),
+        map: new THREE.TextureLoader().load("/texture/front.webp"),
       });
       const cube = new THREE.Mesh(geometry, material);
 
@@ -73,7 +73,7 @@ export default {
         new THREE.PlaneGeometry(8, 3.7),
         new THREE.MeshBasicMaterial({
           map: new THREE.TextureLoader().load(
-            "/texture/prize/" + String(this.prizeValue) + ".png"
+            "/texture/prize/" + String(this.prizeValue) + ".webp"
           ),
         })
       );
