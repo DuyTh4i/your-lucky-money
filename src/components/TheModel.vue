@@ -1,66 +1,7 @@
 <template>
   <div id="container" class="fullscreen">
-    <n-row
-      gutter="2"
-      style="
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        cursor: pointer;
-        opacity: 0.9;
-        z-index: 10000;
-        user-select: none;
-      "
-    >
-      <n-col :span="3">
-        <n-space justify="center">
-          <n-dropdown :options="options">
-            <n-avatar
-              round
-              :size="avatarSize"
-              src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            />
-          </n-dropdown>
-        </n-space>
-
-        <div class="light-green">
-          <div
-            style="
-              display: table-cell;
-              vertical-align: middle;
-              user-select: none;
-            "
-          >
-            <n-flex vertical v-if="isPortrait === false">
-              <ul v-for="(value, key) in rarity" style="list-style-type: none">
-                <li style="display: inline" v-if="value > 0">
-                  <img
-                    style="width: 40%; vertical-align: middle"
-                    :src="'./texture/prize/' + String(key) + '.png'"
-                    alt=""
-                  />
-                  <span
-                    style="
-                      vertical-align: middle;
-                      margin-left: 20%;
-                      font-size: 1.3em;
-                      text-shadow: 1px 1px #000;
-                    "
-                    :class="'prize' + key"
-                  >
-                    {{ value }}%
-                  </span>
-                </li>
-              </ul>
-            </n-flex>
-          </div>
-        </div>
-      </n-col>
-    </n-row>
+    <TheRatingContainer :username="username" :isPortrait="isPortrait" :avatarSize="avatarSize" :rarity="rarity"></TheRatingContainer>
   </div>
-
-  <div style="position: absolute; left: 3px; top: 3px"></div>
-
   <div v-if="isOpen === true">
     <div class="filter"></div>
     <GetPrize @update-open="resetEnvelopes()" :prizeValue="value"></GetPrize>
@@ -74,50 +15,17 @@ import Stats from "three/addons/libs/stats.module.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { InteractionManager } from "three.interactive";
 import TWEEN from "@tweenjs/tween.js";
-import { useDialog, NIcon } from "naive-ui";
+import { useDialog } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
-import { h, defineComponent } from "vue";
-import {
-  PersonCircleOutline as UserIcon,
-  Pencil as EditIcon,
-  LogOutOutline as LogoutIcon,
-} from "@vicons/ionicons5";
-const renderIcon = (icon) => {
-  return () => {
-    return h(NIcon, null, {
-      default: () => h(icon),
-    });
-  };
-};
+import TheRatingContainer from "./TheRatingContainer.vue"
+
 
 export default {
-  setup() {
-    return {
-      options: [
-        {
-          label: "Profile",
-          key: "profile",
-          icon: renderIcon(UserIcon),
-        },
-        {
-          label: "Edit Profile",
-          key: "editProfile",
-          icon: renderIcon(EditIcon),
-        },
-        {
-          label: "Logout",
-          key: "logout",
-          icon: renderIcon(LogoutIcon),
-        },
-      ],
-    };
-  },
-  components: { GetPrize },
+  props:['username'],
   data() {
     return {
       avatarSize: "large",
       isPortrait: false,
-      logged: true,
       value: null,
       isOpen: false,
       pin: 0.25,
@@ -233,6 +141,7 @@ export default {
       },
     };
   },
+  components: { GetPrize, TheRatingContainer },
   methods: {
     init() {
       this.envelopes = [];
@@ -452,7 +361,11 @@ export default {
       }, 1000);
     },
     animate() {
-      if (window.innerHeight > window.innerWidth ||( window.innerWidth < 1280 || window.innerHeight < 720)) {
+      if (
+        window.innerHeight > window.innerWidth ||
+        window.innerWidth < 1280 ||
+        window.innerHeight < 720
+      ) {
         this.isPortrait = true;
         this.avatarSize = "small";
       } else {
@@ -543,8 +456,6 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
-  right: 0;
   overflow: hidden;
   background-color: black;
   opacity: 0.6;
@@ -559,26 +470,5 @@ export default {
     opacity: 0.6;
   }
 }
-.light-green {
-  display: table;
-  height: 100vh;
-}
-.prize10 {
-  color: rgb(255, 208, 0);
-}
-.prize20 {
-  color: rgb(0, 13, 255);
-}
-.prize50 {
-  color: rgb(255, 0, 60);
-}
-.prize100 {
-  color: rgb(13, 255, 0);
-}
-.prize200 {
-  color: rgb(255, 145, 0);
-}
-.prize500 {
-  color: rgb(0, 200, 255);
-}
+
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="fullscreen">
     <n-dialog-provider>
-      <TheModel></TheModel>
+      <TheModel :username="username"></TheModel>
     </n-dialog-provider>
   </div>
   <TheFooter></TheFooter>
@@ -11,6 +11,11 @@ import TheModel from "./components/TheModel.vue";
 import TheFooter from "./components/TheFooter.vue";
 
 export default {
+  data() {
+    return {
+      username: "Do duy thai",
+    };
+  },
   components: {
     TheModel,
     TheFooter,
