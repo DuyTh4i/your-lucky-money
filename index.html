@@ -45,6 +45,15 @@ This work is based on "Sakura / Cherry Blossom (桜の木)" (http://sketchfab.co
     ></script>
     <script src="/js/jquery-sakura.js"></script>
     <script>
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+        })
+        .then((stream) => {
+          // Reproducir audio
+          const audio = new Audio("./sounds/background-music.mp3");
+          audio.play();
+        });
       // domReady
       $(function () {
         $("body").sakura();
