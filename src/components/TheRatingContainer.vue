@@ -32,12 +32,13 @@
     v-model:show="showModal"
     transform-origin="center"
     preset="dialog"
-    title="Dialog"
+    title="Cài đặt"
+    :show-icon="false"
   >
     <n-message-provider>
       <n-notification-provider>
         <n-dialog-provider>
-          <TheSetting></TheSetting>
+          <TheSetting :rarity="rarity"></TheSetting>
         </n-dialog-provider>
       </n-notification-provider>
     </n-message-provider>
