@@ -1,9 +1,14 @@
 <template>
   <div id="container" class="fullscreen">
-    <TheRatingContainer :username="username" :isPortrait="isPortrait" :avatarSize="avatarSize" :rarity="rarity"></TheRatingContainer>
+    <TheRatingContainer
+      :username="username"
+      :isPortrait="isPortrait"
+      :avatarSize="avatarSize"
+      :rarity="rarity"
+    ></TheRatingContainer>
   </div>
   <div v-if="isOpen === true">
-    <div class="filter"></div>
+    <div id="filter"></div>
     <GetPrize @update-open="resetEnvelopes()" :prizeValue="value"></GetPrize>
   </div>
 </template>
@@ -17,11 +22,10 @@ import { InteractionManager } from "three.interactive";
 import TWEEN from "@tweenjs/tween.js";
 import { useDialog } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
-import TheRatingContainer from "./TheRatingContainer.vue"
-
+import TheRatingContainer from "./TheRatingContainer.vue";
 
 export default {
-  props:['username'],
+  props: ["username"],
   data() {
     return {
       avatarSize: "large",
@@ -373,7 +377,6 @@ export default {
         this.isPortrait = false;
       }
       requestAnimationFrame(this.animate);
-      window.scrollTo(0,1);
       TWEEN.update();
       this.orbitControls.update();
       this.interactionManager.update();
@@ -434,7 +437,7 @@ export default {
     confirmItem() {
       this.dialog.warning({
         showIcon: false,
-        transformOrigin: 'center',
+        transformOrigin: "center",
         content: "Bạn muốn mở bao lì xì này?",
         positiveText: "Mở",
         negativeText: "Không",
@@ -452,7 +455,7 @@ export default {
 </script>
 
 <style scoped>
-.filter {
+#filter {
   width: 100%;
   height: 100%;
   position: fixed;
@@ -472,5 +475,4 @@ export default {
     opacity: 0.6;
   }
 }
-
 </style>

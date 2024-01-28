@@ -4,7 +4,7 @@
       style="
         position: absolute;
         left: 50%;
-      bottom: 15%;
+        bottom: 15%;
         transform: translateX(-50%);
       "
       v-if="showBut === true"
@@ -19,6 +19,7 @@
 <script>
 import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
+import { Fireworks } from "fireworks-js";
 
 export default {
   data() {
@@ -41,12 +42,25 @@ export default {
         antialias: true,
       });
       this.container = document.getElementById("container1");
+      this.fil = document.getElementById("filter");
+      this.fireworks = new Fireworks(this.fil, {
+        sound: {
+          enabled: true,
+          volume: {
+            min: 4,
+            max: 50,
+          },
+          files: ["./sounds/firework/explosion0.mp3", "./sounds/firework/explosion1.mp3", "./sounds/firework/explosion2.mp3"],
+        },
+      });
     },
     updateIsOpen() {
+      this.fireworks.stop();
       this.showBut = false;
       this.$emit("update-open");
     },
     loadScene() {
+      this.fireworks.start();
       console.log(this.prizeValue);
       this.camera.position.y = 6;
       this.camera.lookAt(0, -6, 0);
