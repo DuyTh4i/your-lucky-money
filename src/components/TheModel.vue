@@ -373,6 +373,7 @@ export default {
         this.isPortrait = false;
       }
       requestAnimationFrame(this.animate);
+      window.scrollTo(0,1);
       TWEEN.update();
       this.orbitControls.update();
       this.interactionManager.update();
