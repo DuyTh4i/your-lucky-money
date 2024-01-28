@@ -21,7 +21,7 @@
           style="display: inline-block"
         >
           <li v-if="value > 0" style="margin-top: 50px">
-            <img :src="'./texture/prize/' + String(key) + '.png'" />
+            <img :src="'./texture/prize/' + String(key) + '.webp'" />
             <span :class="'prize' + key"> {{ value }}% </span>
           </li>
         </template>
