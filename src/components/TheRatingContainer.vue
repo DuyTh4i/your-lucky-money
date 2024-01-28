@@ -28,14 +28,19 @@
       </ul>
     </div>
   </div>
-  <n-modal v-model:show="showModal" preset="dialog" title="Dialog">
-    <template #header>
-      <div>title</div>
-    </template>
-    <div>content</div>
-    <template #action>
-      <div>action</div>
-    </template>
+  <n-modal
+    v-model:show="showModal"
+    transform-origin="center"
+    preset="dialog"
+    title="Dialog"
+  >
+    <n-message-provider>
+      <n-notification-provider>
+        <n-dialog-provider>
+          <TheSetting></TheSetting>
+        </n-dialog-provider>
+      </n-notification-provider>
+    </n-message-provider>
   </n-modal>
 </template>
 
@@ -47,8 +52,10 @@ import {
   Pencil as EditIcon,
   LogOutOutline as LogoutIcon,
 } from "@vicons/ionicons5";
+import TheSetting from "./TheSetting.vue";
 
 export default {
+  components: { TheSetting },
   props: ["username", "avatarSize", "isPortrait", "rarity"],
   data() {
     return {
@@ -74,7 +81,7 @@ export default {
   },
   methods: {
     selectMenu(key) {
-      if(key === "setting") this.showModal = true
+      if (key === "setting") this.showModal = true;
     },
     renderIcon(icon) {
       return () => {
