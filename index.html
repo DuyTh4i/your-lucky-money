@@ -33,7 +33,7 @@ This work is based on "Sakura / Cherry Blossom (桜の木)" (http://sketchfab.co
       overflow: hidden;
     "
   >
-    <audio autoplay loop>
+    <audio id="audio" autoplay loop>
       <source src="./sounds/background-music.mp3" />
     </audio>
     <div id="app"></div>
@@ -51,7 +51,7 @@ This work is based on "Sakura / Cherry Blossom (桜の木)" (http://sketchfab.co
         })
         .then((stream) => {
           // Reproducir audio
-          const audio = new Audio("./sounds/background-music.mp3");
+          const audio = document.getElementById("audio");
           audio.play();
         });
       // domReady
