@@ -9,7 +9,7 @@
   </div>
   <div v-if="isOpen === true">
     <div id="filter"></div>
-    <GetPrize @update-open="resetEnvelopes()" :prizeValue="value"></GetPrize>
+    <GetPrize @update-open="resetEnvelopes()" :prizeValue="value" :isMuted="isMuted"></GetPrize>
   </div>
 </template>
 <script>
@@ -25,7 +25,7 @@ import GetPrize from "./GetPrize.vue";
 import TheRatingContainer from "./TheRatingContainer.vue";
 
 export default {
-  props: ["username"],
+  props: ["username", "isMuted"],
   data() {
     return {
       avatarSize: "large",

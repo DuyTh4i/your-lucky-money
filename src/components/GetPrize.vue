@@ -27,7 +27,7 @@ export default {
       showBut: false,
     };
   },
-  props: ["prizeValue"],
+  props: ["prizeValue", "isMuted"],
   methods: {
     init() {
       this.scene = new THREE.Scene();
@@ -45,12 +45,12 @@ export default {
       this.fil = document.getElementById("filter");
       this.fireworks = new Fireworks(this.fil, {
         sound: {
-          enabled: true,
+          enabled: !this.isMuted,
           volume: {
             min: 4,
             max: 50,
           },
-          files: ["./sounds/firework/explosion0.mp3", "./sounds/firework/explosion1.mp3", "./sounds/firework/explosion2.mp3"],
+          files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
         },
       });
     },
@@ -106,6 +106,16 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
       TWEEN.update();
+      this.fireworks.updateOptions({
+        sound: {
+          enabled: !this.isMuted,
+          volume: {
+            min: 4,
+            max: 50,
+          },
+          files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
+        },
+      })
       this.renderer.render(this.scene, this.camera);
     },
     showPrize(cube, prize) {

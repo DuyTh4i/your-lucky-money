@@ -1,24 +1,58 @@
 <template>
   <div class="fullscreen">
     <n-dialog-provider>
-      <TheModel :username="username"></TheModel>
+      <TheModel :username="username" :isMuted="isMuted"></TheModel>
     </n-dialog-provider>
   </div>
+  <n-button
+    style="position: absolute; bottom: 5px; left: 5px"
+    strong
+    secondary
+    circle
+    color="#FFFFFF"
+    @click="changeAudio"
+  >
+    <template #icon>
+      <n-icon
+        ><music-icon v-if="isMuted === false" /><muted-icon
+          v-else="isMuted === true"
+      /></n-icon> </template
+  ></n-button>
   <TheFooter></TheFooter>
 </template>
 <script>
 import TheModel from "./components/TheModel.vue";
 import TheFooter from "./components/TheFooter.vue";
+import { VolumeMuteOutline as MutedIcon } from "@vicons/ionicons5";
+import { MusicalNotesOutline as MusicIcon } from "@vicons/ionicons5";
 
 export default {
   data() {
     return {
+      isMuted: true,
       username: "Do duy thai",
+      audio: document.getElementById("audio"),
     };
   },
   components: {
+    MutedIcon,
+    MusicIcon,
     TheModel,
     TheFooter,
+  },
+  methods: {
+    changeAudio() {
+      this.isMuted = !this.isMuted;
+      if (this.isMuted === false) this.audio.play();
+      else this.audio.pause();
+    },
+  },
+  mounted() {
+    document.addEventListener("visibilitychange", (event) => {
+      if (this.isMuted === false)
+        if (document.visibilityState !== "visible") this.audio.pause();
+        else this.audio.play();
+    });
   },
 };
 </script>
@@ -29,8 +63,6 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
-  right: 0;
   overflow: hidden;
 }
 </style>
