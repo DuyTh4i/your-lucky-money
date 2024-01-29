@@ -48,6 +48,7 @@ export default {
     },
   },
   mounted() {
+    audio.volume = 0.3;
     document.addEventListener("visibilitychange", (event) => {
       if (this.isMuted === false)
         if (document.visibilityState !== "visible") this.audio.pause();

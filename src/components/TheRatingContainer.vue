@@ -6,11 +6,11 @@
         style="display: inline-block"
         @select="selectMenu"
       >
-        <n-avatar
-          round
-          :size="avatarSize"
-          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-        />
+          <n-avatar
+            round
+            :size="avatarSize"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
       </n-dropdown>
     </n-flex>
     <div class="rate" v-if="isPortrait === false">

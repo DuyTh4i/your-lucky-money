@@ -48,7 +48,7 @@ export default {
           enabled: !this.isMuted,
           volume: {
             min: 4,
-            max: 50,
+            max: 30,
           },
           files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
         },
@@ -111,7 +111,7 @@ export default {
           enabled: !this.isMuted,
           volume: {
             min: 4,
-            max: 50,
+            max: 30,
           },
           files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
         },
