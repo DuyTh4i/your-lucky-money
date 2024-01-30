@@ -5,11 +5,16 @@
       :isPortrait="isPortrait"
       :avatarSize="avatarSize"
       :rarity="rarity"
+      @saved-setting="changeRate"
     ></TheRatingContainer>
   </div>
   <div v-if="isOpen === true">
     <div id="filter"></div>
-    <GetPrize @update-open="resetEnvelopes()" :prizeValue="value" :isMuted="isMuted"></GetPrize>
+    <GetPrize
+      @update-open="resetEnvelopes()"
+      :prizeValue="value"
+      :isMuted="isMuted"
+    ></GetPrize>
   </div>
 </template>
 <script>
@@ -135,14 +140,14 @@ export default {
           z: -3,
         },
       ],
-      rarity: {
-        20: 45,
-        50: 45,
-        10: 4.9,
-        100: 4.9,
-        200: 0.2,
-        500: 0,
-      },
+      rarity: [
+        { prize: 10, rate: 4.9 },
+        { prize: 20, rate: 45 },
+        { prize: 50, rate: 45 },
+        { prize: 100, rate: 4.9 },
+        { prize: 200, rate: 0.2 },
+        { prize: 500, rate: 0 },
+      ],
     };
   },
   components: { GetPrize, TheRatingContainer },
@@ -317,10 +322,10 @@ export default {
       const percent = rand / 1000;
       let result = null,
         acc = 0;
-      Object.keys(this.rarity).forEach((key) => {
-        if (result === null && percent > 100 - this.rarity[key] - acc)
-          result = key;
-        acc += parseFloat(this.rarity[key]);
+      this.rarity.forEach((item) => {
+        if (result === null && percent > 100 - item.rate - acc)
+          result = item.prize;
+        acc += parseFloat(item.rate);
       });
       return result;
     },
@@ -445,6 +450,10 @@ export default {
           this.isOpen = true;
         },
       });
+    },
+    changeRate(settingRarity) {
+      this.rarity = JSON.parse(JSON.stringify(settingRarity));
+      this.resetEnvelopes();
     },
   },
   mounted() {

@@ -6,23 +6,21 @@
         style="display: inline-block"
         @select="selectMenu"
       >
-          <n-avatar
-            round
-            :size="avatarSize"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-          />
+        <n-avatar
+          round
+          :size="avatarSize"
+          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+        />
       </n-dropdown>
     </n-flex>
     <div class="rate" v-if="isPortrait === false">
       <ul class="element">
-        <template
-          v-for="(value, key) in rarity"
-          :key="key"
-          style="display: inline-block"
-        >
-          <li v-if="value > 0" style="margin-top: 50px">
-            <img :src="'./texture/prize/' + String(key) + '.webp'" />
-            <span :class="'prize' + key"> {{ value }}% </span>
+        <template v-for="item in rarity" style="display: inline-block">
+          <li v-if="item.rate > 0" style="margin-top: 50px">
+            <img
+              :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
+            />
+            <span :class="'prize' + item.prize"> {{ item.rate }}% </span>
           </li>
         </template>
       </ul>
@@ -34,14 +32,31 @@
     preset="dialog"
     title="Cài đặt"
     :show-icon="false"
+    positive-text="Lưu"
+    negative-text="Hủy"
+    @positive-click="updateSetting()"
   >
-    <n-message-provider>
-      <n-notification-provider>
-        <n-dialog-provider>
-          <TheSetting :rarity="rarity"></TheSetting>
-        </n-dialog-provider>
-      </n-notification-provider>
-    </n-message-provider>
+    <n-space justify="center">
+      <div style="text-align: center">
+        <n-form label-placement="left" size="small">
+          <template v-for="(item, index) in settingRarity" :key="index">
+            <n-form-item>
+              <n-space align="center">
+                <n-image
+                  width="100vw"
+                  :src="
+                    './texture/prize/default/' + String(item.prize) + '.webp'
+                  "
+                />
+                <n-input-number v-model:value="item.rate" :show-button="false">
+                  <template #suffix> % </template></n-input-number
+                >
+              </n-space>
+            </n-form-item>
+          </template>
+        </n-form>
+      </div>
+    </n-space>
   </n-modal>
 </template>
 
@@ -53,13 +68,13 @@ import {
   Pencil as EditIcon,
   LogOutOutline as LogoutIcon,
 } from "@vicons/ionicons5";
-import TheSetting from "./TheSetting.vue";
 
 export default {
-  components: { TheSetting },
+  inheritAttrs:false,
   props: ["username", "avatarSize", "isPortrait", "rarity"],
   data() {
     return {
+      settingRarity: JSON.parse(JSON.stringify(this.rarity)),
       showModal: ref(false),
       options: [
         {
@@ -90,6 +105,9 @@ export default {
           default: () => h(icon),
         });
       };
+    },
+    updateSetting() {
+      this.$emit("savedSetting", this.settingRarity);
     },
   },
 };

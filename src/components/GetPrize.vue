@@ -87,7 +87,7 @@ export default {
         new THREE.PlaneGeometry(8, 3.7),
         new THREE.MeshBasicMaterial({
           map: new THREE.TextureLoader().load(
-            "/texture/prize/" + String(this.prizeValue) + ".webp"
+            "/texture/prize/default/" + String(this.prizeValue) + ".webp"
           ),
         })
       );
