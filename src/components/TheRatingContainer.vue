@@ -36,26 +36,27 @@
     negative-text="Hủy"
     @positive-click="updateSetting()"
   >
-    <n-space justify="center">
-      <div style="text-align: center">
-        <n-form label-placement="left" size="small">
+    <n-space justify="center" style="text-align: center;">
+      
+        <n-form label-placement="left" >
           <template v-for="(item, index) in settingRarity" :key="index">
             <n-form-item>
-              <n-space align="center">
-                <n-image
-                  width="100vw"
-                  :src="
-                    './texture/prize/default/' + String(item.prize) + '.webp'
-                  "
-                />
-                <n-input-number v-model:value="item.rate" :show-button="false">
-                  <template #suffix> % </template></n-input-number
-                >
-              </n-space>
+              <n-image
+                style="vertical-align: middle; margin-right: 10%"
+                width="100"
+                :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
+              />
+              <n-input-number
+                style="vertical-align: middle"
+                v-model:value="item.rate"
+                :show-button="false"
+              >
+                <template #suffix> % </template></n-input-number
+              >
             </n-form-item>
           </template>
         </n-form>
-      </div>
+      
     </n-space>
   </n-modal>
 </template>
@@ -70,7 +71,7 @@ import {
 } from "@vicons/ionicons5";
 
 export default {
-  inheritAttrs:false,
+  inheritAttrs: false,
   props: ["username", "avatarSize", "isPortrait", "rarity"],
   data() {
     return {
