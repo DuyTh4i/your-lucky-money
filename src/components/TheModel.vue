@@ -8,6 +8,19 @@
       @saved-setting="changeRate"
     ></TheRatingContainer>
   </div>
+  <n-button
+    class="refresh"
+    strong
+    secondary
+    circle
+    color="#FFFFFF"
+    @click="resetEnvelopes"
+    :disabled="refreshStatus"
+  >
+    <template #icon>
+      <n-icon><RefreshIcon /> </n-icon>
+    </template>
+  </n-button>
   <div v-if="isOpen === true">
     <div id="filter"></div>
     <GetPrize
@@ -28,11 +41,13 @@ import TWEEN from "@tweenjs/tween.js";
 import { useDialog } from "naive-ui";
 import GetPrize from "./GetPrize.vue";
 import TheRatingContainer from "./TheRatingContainer.vue";
+import { SyncOutline as RefreshIcon } from "@vicons/ionicons5";
 
 export default {
   props: ["username", "isMuted"],
   data() {
     return {
+      refreshStatus: true,
       avatarSize: "large",
       isPortrait: false,
       value: null,
@@ -150,7 +165,7 @@ export default {
       ],
     };
   },
-  components: { GetPrize, TheRatingContainer },
+  components: { GetPrize, TheRatingContainer, RefreshIcon },
   methods: {
     init() {
       this.envelopes = [];
@@ -434,9 +449,11 @@ export default {
     },
 
     resetEnvelopes() {
+      this.refreshStatus = true;
       this.isOpen = false;
       this.value = null;
       this.generateEnvelope();
+      setTimeout(() => (this.refreshStatus = false), 2000);
     },
 
     confirmItem() {
@@ -483,5 +500,11 @@ export default {
   to {
     opacity: 0.6;
   }
+}
+.refresh {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>

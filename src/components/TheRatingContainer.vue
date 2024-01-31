@@ -7,6 +7,7 @@
         @select="selectMenu"
       >
         <n-avatar
+          style="margin-top: 5px"
           round
           :size="avatarSize"
           src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
@@ -20,7 +21,9 @@
             <img
               :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
             />
-            <span :class="'prize' + item.prize"> {{ item.rate }}% </span>
+            <span class="rateDetail" :class="'prize' + item.prize">
+              {{ item.rate }}%
+            </span>
           </li>
         </template>
       </ul>
@@ -36,27 +39,27 @@
     negative-text="Hủy"
     @positive-click="updateSetting()"
   >
-    <n-space justify="center" style="text-align: center;">
-      
-        <n-form label-placement="left" >
-          <template v-for="(item, index) in settingRarity" :key="index">
-            <n-form-item>
-              <n-image
-                style="vertical-align: middle; margin-right: 10%"
-                width="100"
-                :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
-              />
-              <n-input-number
-                style="vertical-align: middle"
-                v-model:value="item.rate"
-                :show-button="false"
-              >
-                <template #suffix> % </template></n-input-number
-              >
-            </n-form-item>
-          </template>
-        </n-form>
-      
+    <n-space justify="center" style="text-align: center">
+      <n-form label-placement="left">
+        <template v-for="(item, index) in settingRarity" :key="index">
+          <n-form-item>
+            <n-image
+              class="settingImg"
+              width="100"
+              :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
+            />
+            <n-input-number
+              style="vertical-align: middle"
+              v-model:value="item.rate"
+              :show-button="false"
+              placeholder="Nhập tỷ lệ"
+            >
+              <template #suffix> % </template></n-input-number
+            >
+          </n-form-item>
+        </template>
+        <span :class="status">{{ sumRate }}%</span>
+      </n-form>
     </n-space>
   </n-modal>
 </template>
@@ -75,7 +78,12 @@ export default {
   props: ["username", "avatarSize", "isPortrait", "rarity"],
   data() {
     return {
+      validator: (x) => {
+        parseInt(x) > 0;
+      },
+      status: "valid",
       settingRarity: JSON.parse(JSON.stringify(this.rarity)),
+      sum: 0,
       showModal: ref(false),
       options: [
         {
@@ -108,7 +116,21 @@ export default {
       };
     },
     updateSetting() {
-      this.$emit("savedSetting", this.settingRarity);
+      if (this.status === "valid") {
+        this.$emit("savedSetting", this.settingRarity);
+      } else {
+        return false;
+      }
+    },
+  },
+  computed: {
+    sumRate() {
+      this.sum = 0;
+      this.settingRarity.forEach((item) => (this.sum += item.rate));
+      this.sum = this.sum.toFixed(2);
+      if (this.sum != 100) this.status = "invalid";
+      else this.status = "valid";
+      return this.sum;
     },
   },
 };
@@ -141,7 +163,6 @@ export default {
   left: 0;
   cursor: pointer;
   user-select: none;
-  /* background-color: rgba(255, 255, 255, 0.2); */
 }
 .rate {
   display: table;
@@ -159,10 +180,22 @@ img {
   width: 50%;
   vertical-align: middle;
 }
-span {
+.rateDetail {
   vertical-align: middle;
   margin-left: 10%;
   font-size: 1.3em;
   text-shadow: 1px 1px #000;
+}
+.settingImg {
+  vertical-align: middle;
+  margin-right: 10%;
+}
+.valid {
+  color: rgb(27, 183, 0);
+  text-shadow: 0.5px 0.5px #027b00;
+}
+.invalid {
+  color: rgb(183, 0, 0);
+  text-shadow: 0.5px 0.5px #c80000;
 }
 </style>
