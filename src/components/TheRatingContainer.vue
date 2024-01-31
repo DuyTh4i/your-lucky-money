@@ -7,10 +7,10 @@
         @select="selectMenu"
       >
         <n-avatar
-          style="margin-top: 5px"
+          style="margin-top: 5px; border: 2px solid #f0216d"
           round
           :size="avatarSize"
-          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          src="./image/avt.webp"
         />
       </n-dropdown>
     </n-flex>
