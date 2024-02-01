@@ -400,7 +400,6 @@ export default {
       TWEEN.update();
       this.orbitControls.update();
       this.interactionManager.update();
-      this.renderer.renderLists.dispose();
       this.renderer.render(this.scene, this.camera);
       //this.stats.update();
     },
@@ -428,8 +427,9 @@ export default {
       this.itemMat.forEach((mat) => {
         new TWEEN.Tween(mat).to({ opacity: 0 }, 800).start();
       });
-      
-        new TWEEN.Tween(this.ribbonMat).to({ opacity: 0 }, 500).start();
+
+      new TWEEN.Tween(this.ribbonMat).to({ opacity: 0 }, 500).start();
+
       setTimeout(() => {
         this.envelopes.forEach((item) => {
           this.interactionManager.remove(item);
@@ -442,6 +442,7 @@ export default {
           item.geometry.dispose();
           item.material.dispose();
         });
+        this.renderer.renderLists.dispose();
         this.envelopes = [];
         this.ribbons = [];
       }, 810);

@@ -50,13 +50,19 @@ export default {
             min: 4,
             max: 30,
           },
-          files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
+          files: [
+            "./sounds/fireworks/explosion0.mp3",
+            "./sounds/fireworks/explosion1.mp3",
+            "./sounds/fireworks/explosion2.mp3",
+          ],
         },
       });
     },
     updateIsOpen() {
       this.fireworks.stop();
       this.showBut = false;
+      this.renderer.dispose();
+      this.renderer.forceContextLoss();
       this.$emit("update-open");
     },
     loadScene() {
@@ -113,9 +119,13 @@ export default {
             min: 4,
             max: 30,
           },
-          files: ["./sounds/fireworks/explosion0.mp3", "./sounds/fireworks/explosion1.mp3", "./sounds/fireworks/explosion2.mp3"],
+          files: [
+            "./sounds/fireworks/explosion0.mp3",
+            "./sounds/fireworks/explosion1.mp3",
+            "./sounds/fireworks/explosion2.mp3",
+          ],
         },
-      })
+      });
       this.renderer.render(this.scene, this.camera);
     },
     showPrize(cube, prize) {
