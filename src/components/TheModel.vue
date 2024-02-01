@@ -428,9 +428,8 @@ export default {
       this.itemMat.forEach((mat) => {
         new TWEEN.Tween(mat).to({ opacity: 0 }, 800).start();
       });
-      setTimeout(() => {
+      
         new TWEEN.Tween(this.ribbonMat).to({ opacity: 0 }, 500).start();
-      }, 400);
       setTimeout(() => {
         this.envelopes.forEach((item) => {
           this.interactionManager.remove(item);
