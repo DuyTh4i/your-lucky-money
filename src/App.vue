@@ -30,7 +30,7 @@ export default {
   data() {
     return {
       isMuted: true,
-      username: "Do duy thai",
+      username: "Khách",
       audio: document.getElementById("audio"),
     };
   },

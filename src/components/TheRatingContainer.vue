@@ -97,8 +97,8 @@ export default {
           icon: this.renderIcon(EditIcon),
         },
         {
-          label: "Đăng xuất",
-          key: "logout",
+          label: "Đăng nhập",
+          key: "changeState",
           icon: this.renderIcon(LogoutIcon),
         },
       ],
