@@ -1,30 +1,36 @@
 <template>
   <div id="container1" class="fullscreen1">
-    <n-button
+    <n-card
+    v-if="showWish"
+      size="small"
+      role="dialog"
       style="
+        width: 300px;
         position: absolute;
         left: 50%;
         bottom: 15%;
         transform: translateX(-50%);
       "
-      v-if="showBut === true"
-      size="large"
-      @click="updateIsOpen()"
-      color="#ff69b4"
     >
-      xác nhận</n-button
-    >
+      {{ wish }}
+      <template #footer>
+        <n-button @click="updateIsOpen()" color="#ff69b4" style="transform: translateX(-50%);
+        left: 50%;"> xác nhận</n-button>
+      </template>
+    </n-card>
   </div>
 </template>
 <script>
 import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Fireworks } from "fireworks-js";
+import { ref } from "vue";
 
 export default {
   data() {
     return {
-      showBut: false,
+      wish: "Chúc bạn và gia đình có 1 năm may mắn, khỏe mạnh.",
+      showWish: ref(false),
     };
   },
   props: ["prizeValue", "isMuted"],
@@ -60,7 +66,7 @@ export default {
     },
     updateIsOpen() {
       this.fireworks.stop();
-      this.showBut = false;
+      this.showWish = false;
       this.renderer.dispose();
       this.renderer.forceContextLoss();
       this.$emit("update-open");
@@ -136,7 +142,7 @@ export default {
         new TWEEN.Tween(prize.position).to({ z: 1 }, 1500).start();
       }, 2000);
       setTimeout(() => {
-        this.showBut = true;
+        this.showWish = true;
       }, 4500);
     },
   },
