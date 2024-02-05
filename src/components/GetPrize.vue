@@ -1,23 +1,20 @@
 <template>
   <div id="container1" class="fullscreen1">
-    <n-card
-    v-if="showWish"
-      size="small"
-      role="dialog"
-      style="
-        width: 300px;
-        position: absolute;
-        left: 50%;
-        bottom: 15%;
-        transform: translateX(-50%);
-      "
-    >
-      {{ wish }}
-      <template #footer>
-        <n-button @click="updateIsOpen()" color="#ff69b4" style="transform: translateX(-50%);
-        left: 50%;"> xác nhận</n-button>
-      </template>
-    </n-card>
+    <div class="card" v-if="showWish">
+        <span class="wish">{{ wish }}</span>
+        <n-button
+          @click="updateIsOpen()"
+          color="#ff69b4"
+          style="
+            position: absolute;
+            bottom: 7px;
+            transform: translateX(-50%);
+            left: 50%;
+          "
+        >
+          xác nhận</n-button
+        >
+      </div>
   </div>
 </template>
 <script>
@@ -159,5 +156,32 @@ export default {
   top: 0;
   left: 0;
   overflow: hidden;
+}
+.card {
+  text-align: center;
+  background: url("/image/card.webp") padding-box,
+    linear-gradient(#ffd555, #ff4ad6) border-box;
+    background-size: cover;
+  border-radius: 5%;
+  border: 2px solid transparent;
+  width: 350px;
+  height: 240px;
+  position: absolute;
+  left: 50%;
+  bottom: 15%;
+  transform: translateX(-50%);
+}
+@font-face {
+  font-family: itim;
+  src: url("/font/itim.ttf");
+}
+.wish {
+  font-family: itim;
+  font-size: 18px;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgb(196, 23, 23);
 }
 </style>

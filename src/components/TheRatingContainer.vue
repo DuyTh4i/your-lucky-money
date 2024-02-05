@@ -69,8 +69,9 @@ import { NIcon } from "naive-ui";
 import { h, ref } from "vue";
 import {
   PersonCircleOutline as UserIcon,
-  Pencil as EditIcon,
+  OptionsOutline as SettingIcon,
   LogOutOutline as LogoutIcon,
+  LogInOutline as LoginIcon,
 } from "@vicons/ionicons5";
 
 export default {
@@ -94,12 +95,12 @@ export default {
         {
           label: "Cài đặt",
           key: "setting",
-          icon: this.renderIcon(EditIcon),
+          icon: this.renderIcon(SettingIcon),
         },
         {
           label: "Đăng nhập",
           key: "changeState",
-          icon: this.renderIcon(LogoutIcon),
+          icon: this.renderIcon(LoginIcon),
         },
       ],
     };
