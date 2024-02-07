@@ -156,9 +156,9 @@ export default {
         },
       ],
       rarity: [
-        { prize: 10, rate: 4.9 },
         { prize: 20, rate: 45 },
         { prize: 50, rate: 45 },
+        { prize: 10, rate: 4.9 },
         { prize: 100, rate: 4.9 },
         { prize: 200, rate: 0.2 },
         { prize: 500, rate: 0 },
@@ -356,18 +356,7 @@ export default {
           item.rotateY(Math.PI / 2);
           item.position.set(value.x, value.y - 0.35, value.z);
           item.userData.prize = this.gacha();
-          item.addEventListener("click", (event) => {
-            if (event.target == this.boxHelper.object) {
-              this.isPopup = true;
-              this.value = item.userData.prize;
-              this.confirmItem();
-            } else {
-              this.boxHelper.visible = true;
-              this.boxHelper.setFromObject(item);
-            }
-            console.log(event.target.userData.prize);
-          });
-          this.interactionManager.add(item);
+
           this.envelopes.push(item);
           this.ribbons.push(
             new THREE.Line(
@@ -447,13 +436,31 @@ export default {
         this.ribbons = [];
       }, 810);
     },
-
+    setOnClickEnvelope() {
+      this.envelopes.forEach((item) => {
+        item.addEventListener("click", (event) => {
+          if (event.target == this.boxHelper.object) {
+            this.isPopup = true;
+            this.value = item.userData.prize;
+            this.confirmItem();
+          } else {
+            this.boxHelper.visible = true;
+            this.boxHelper.setFromObject(item);
+          }
+          console.log(event.target.userData.prize);
+        });
+        this.interactionManager.add(item);
+      });
+    },
     resetEnvelopes() {
       this.refreshStatus = true;
       this.isOpen = false;
       this.value = null;
       this.generateEnvelope();
-      setTimeout(() => (this.refreshStatus = false), 2000);
+      setTimeout(() => {
+        this.setOnClickEnvelope();
+        this.refreshStatus = false;
+      }, 2000);
     },
 
     confirmItem() {
@@ -470,6 +477,9 @@ export default {
     },
     changeRate(settingRarity) {
       this.rarity = JSON.parse(JSON.stringify(settingRarity));
+      this.rarity.sort((a, b) => {
+        return b.rate - a.rate;
+      });
       this.resetEnvelopes();
     },
   },

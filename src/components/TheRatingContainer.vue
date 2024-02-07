@@ -58,7 +58,9 @@
             >
           </n-form-item>
         </template>
-        <span :class="status">{{ sumRate }}%</span>
+        <div style="background-color: #f4f4f4;">
+          <span :class="status">{{ sumRate }}%</span>
+        </div>
       </n-form>
     </n-space>
   </n-modal>
