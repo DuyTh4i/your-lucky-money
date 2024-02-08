@@ -409,6 +409,7 @@ export default {
     detachEnvelopes() {
       this.boxHelper.visible = false;
       this.envelopes.forEach((item) => {
+        this.interactionManager.remove(item);
         new TWEEN.Tween(item.position)
           .to({ y: item.position.y - 0.35 }, 800)
           .start();
@@ -421,7 +422,6 @@ export default {
 
       setTimeout(() => {
         this.envelopes.forEach((item) => {
-          this.interactionManager.remove(item);
           item.removeFromParent();
           item.geometry.dispose();
           item.material.forEach((mat) => mat.dispose());
