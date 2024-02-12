@@ -156,12 +156,12 @@ export default {
         },
       ],
       rarity: [
-        { prize: 20, rate: 24 },
-        { prize: 50, rate: 65.5 },
+        { prize: 20, rate: 20 },
+        { prize: 50, rate: 65 },
         { prize: 10, rate: 0 },
-        { prize: 100, rate: 10 },
+        { prize: 100, rate: 14 },
         { prize: 200, rate: 0.5 },
-        { prize: 500, rate: 0 },
+        { prize: 500, rate: 0.5 },
       ],
     };
   },
