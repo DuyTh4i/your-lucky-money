@@ -21,9 +21,7 @@
             <img
               :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
             />
-            <span class="rateDetail" :class="'prize' + item.prize">
-              {{ item.rate }}%
-            </span>
+
           </li>
         </template>
       </ul>
