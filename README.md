@@ -7,3 +7,5 @@ Feature:
   - Setup prize rate.
   - Authenticate with Google.
   - save prize's rate as a profile.
+
+URL: your-lucky-money.vercel.app
