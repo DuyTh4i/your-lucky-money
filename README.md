@@ -8,4 +8,4 @@ Feature:
   - Authenticate with Google.
   - save prize's rate as a profile.
 
-URL: your-lucky-money.vercel.app
+URL: [your-lucky-money.vercel.app](https://your-lucky-money.vercel.app/)
