@@ -37,11 +37,11 @@
     negative-text="Hủy"
     @positive-click="updateSetting()"
   >
-    <n-space justify="center" style="margin-bottom: 5%; ">
-      <n-switch v-model:value="isRandomMode"/> Chế độ ngẫu nhiên
+    <n-space justify="center" style="margin-bottom: 5%">
+      <n-switch v-model:value="settingRandomMode" /> Chế độ ngẫu nhiên
     </n-space>
     <n-space justify="center" style="text-align: center">
-      <n-form label-placement="left">
+      <n-form label-placement="left" v-if="settingRandomMode">
         <template v-for="(item, index) in settingRarity" :key="index">
           <n-form-item>
             <n-image
@@ -59,8 +59,28 @@
             >
           </n-form-item>
         </template>
-        <div style="background-color: #f4f4f4;">
+        <div style="background-color: #f4f4f4">
           <span :class="status">{{ sumRate }}%</span>
+        </div>
+      </n-form>
+
+      <n-form label-placement="left" v-if="!settingRandomMode">
+        <template v-for="(item, index) in settingQuantity" :key="index">
+          <n-form-item>
+            <n-image
+              class="settingImg"
+              width="100"
+              :src="'./texture/prize/default/' + String(item.prize) + '.webp'"
+            />
+            <n-input-number
+              style="vertical-align: middle"
+              v-model:value="item.amount"
+              placeholder="Nhập số lượng"
+            ></n-input-number>
+          </n-form-item>
+        </template>
+        <div style="background-color: #f4f4f4">
+          <span :class="status">{{ sumRate }}</span>
         </div>
       </n-form>
     </n-space>
@@ -79,15 +99,23 @@ import {
 
 export default {
   inheritAttrs: false,
-  props: ["username", "avatarSize", "isPortrait", "rarity", "isRandomMode"],
+  props: [
+    "username",
+    "avatarSize",
+    "isPortrait",
+    "rarity",
+    "isRandomMode",
+    "quantity",
+  ],
   data() {
     return {
       validator: (x) => {
         parseInt(x) > 0;
       },
       status: "valid",
-      isRandomMode: this.isRandomMode,
+      settingRandomMode: this.isRandomMode,
       settingRarity: JSON.parse(JSON.stringify(this.rarity)),
+      settingQuantity: JSON.parse(JSON.stringify(this.quantity)),
       sum: 0,
       showModal: ref(false),
       options: [
@@ -122,7 +150,7 @@ export default {
     },
     updateSetting() {
       if (this.status === "valid") {
-        this.$emit("savedSetting", this.settingRarity);
+        this.$emit("savedSetting", this.settingRandomMode, this.settingRarity, this.settingQuantity);
       } else {
         return false;
       }
@@ -131,11 +159,18 @@ export default {
   computed: {
     sumRate() {
       this.sum = 0;
-      this.settingRarity.forEach((item) => (this.sum += item.rate));
-      this.sum = this.sum.toFixed(2);
-      if (this.sum != 100) this.status = "invalid";
-      else this.status = "valid";
-      return this.sum;
+      if (this.settingRandomMode) {
+        this.settingRarity.forEach((item) => (this.sum += item.rate));
+        this.sum = this.sum.toFixed(2);
+        if (this.sum != 100) this.status = "invalid";
+        else this.status = "valid";
+        return this.sum;
+      } else {
+        this.settingQuantity.forEach((item) => (this.sum += item.amount));
+        if (this.sum > 20) this.status = "invalid";
+        else this.status = "valid";
+        return this.sum;
+      }
     },
   },
 };

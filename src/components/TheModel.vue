@@ -6,6 +6,7 @@
       :isPortrait="isPortrait"
       :avatarSize="avatarSize"
       :rarity="rarity"
+      :quantity="quantity"
       @saved-setting="changeRate"
     ></TheRatingContainer>
   </div>
@@ -25,7 +26,7 @@
   <div v-if="isOpen === true">
     <div id="filter"></div>
     <GetPrize
-      @update-open="resetEnvelopes()"
+      @update-open="nextTurn()"
       :prizeValue="value"
       :isMuted="isMuted"
     ></GetPrize>
@@ -442,7 +443,9 @@ export default {
               );
             }
           });
-          this.ribbons.forEach((rib) => this.scene.add(rib));
+          this.ribbons.forEach((rib) => {
+            this.scene.add(rib);
+          });
           this.envelopes.forEach((env) => this.scene.add(env));
           this.attachEnvelopes();
         }, 1000);
@@ -482,6 +485,43 @@ export default {
       setTimeout(() => {
         new TWEEN.Tween(this.ribbonMat).to({ opacity: 1 }, 500).start();
       }, 400);
+    },
+
+    detachAnEnvelope(envelope, ribbon) {
+      this.refreshStatus = true;
+      this.isOpen = false;
+      this.value = null;
+      this.coors.forEach((item) => {
+        if (
+          item.x == envelope.position.x.toFixed(2) &&
+          item.y == envelope.position.y.toFixed(2) &&
+          item.z == envelope.position.z.toFixed(2)
+        )
+          item.selected = false;
+      });
+      this.boxHelper.visible = false;
+      this.interactionManager.remove(envelope);
+      new TWEEN.Tween(envelope.position)
+        .to({ y: envelope.position.y - 0.35 }, 800)
+        .start();
+      new TWEEN.Tween(envelope.material).to({ opacity: 0 }, 800).start();
+      new TWEEN.Tween(ribbon.material).to({ opacity: 0 }, 500).start();
+      setTimeout(() => {
+        envelope.removeFromParent();
+        envelope.geometry.dispose();
+        envelope.material.forEach((mat) => mat.dispose());
+
+        ribbon.removeFromParent();
+        ribbon.geometry.dispose();
+        ribbon.material.dispose();
+
+        this.renderer.renderLists.dispose();
+      }, 810);
+
+      setTimeout(() => {
+        this.refreshStatus = false;
+      }, 1700);
+
     },
 
     detachEnvelopes() {
@@ -530,6 +570,24 @@ export default {
         this.interactionManager.add(item);
       });
     },
+    nextTurn() {
+      if (this.isRandomMode) this.resetEnvelopes();
+      else {
+        let rib;
+        this.ribbons.forEach((item) => {
+          if (
+            item.geometry.getAttribute("position").getX(0).toFixed(2) ==
+              this.boxHelper.object.position.x.toFixed(2) &&
+            item.geometry.getAttribute("position").getY(0).toFixed(2) ==
+              this.boxHelper.object.position.y.toFixed(2) &&
+            item.geometry.getAttribute("position").getZ(0).toFixed(2) ==
+              this.boxHelper.object.position.z.toFixed(2)
+          )
+            rib = item;
+        });
+        this.detachAnEnvelope(this.boxHelper.object, rib);
+      }
+    },
     resetEnvelopes() {
       this.refreshStatus = true;
       this.isOpen = false;
@@ -553,14 +611,17 @@ export default {
         },
       });
     },
-    changeRate(settingRarity) {
+    changeRate(settingRandomMode, settingRarity, settingQuantity) {
+      this.isRandomMode = settingRandomMode;
       if (this.isRandomMode) {
         this.rarity = JSON.parse(JSON.stringify(settingRarity));
         this.rarity.sort((a, b) => {
           return b.rate - a.rate;
         });
-        this.resetEnvelopes();
+      } else {
+        this.quantity = JSON.parse(JSON.stringify(settingQuantity));
       }
+      this.resetEnvelopes();
     },
   },
   mounted() {
