@@ -53,6 +53,7 @@
               style="vertical-align: middle"
               v-model:value="item.rate"
               :show-button="false"
+              min=0
               placeholder="Nhập tỷ lệ"
             >
               <template #suffix> % </template></n-input-number
@@ -75,6 +76,7 @@
             <n-input-number
               style="vertical-align: middle"
               v-model:value="item.amount"
+              min=0
               placeholder="Nhập số lượng"
             ></n-input-number>
           </n-form-item>
