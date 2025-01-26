@@ -14,7 +14,7 @@
         />
       </n-dropdown>
     </n-flex>
-    <div class="rate" v-if="isPortrait === false">
+    <!-- <div class="rate" v-if="isPortrait === false">
       <ul class="element">
         <template v-for="item in rarity" style="display: inline-block">
           <li v-if="item.rate > 0" style="margin-top: 50px">
@@ -25,7 +25,7 @@
           </li>
         </template>
       </ul>
-    </div>
+    </div> -->
   </div>
   <n-modal
     v-model:show="showModal"
@@ -37,6 +37,9 @@
     negative-text="Hủy"
     @positive-click="updateSetting()"
   >
+    <n-space justify="center" style="margin-bottom: 5%; ">
+      <n-switch v-model:value="isRandomMode"/> Chế độ ngẫu nhiên
+    </n-space>
     <n-space justify="center" style="text-align: center">
       <n-form label-placement="left">
         <template v-for="(item, index) in settingRarity" :key="index">
@@ -76,13 +79,14 @@ import {
 
 export default {
   inheritAttrs: false,
-  props: ["username", "avatarSize", "isPortrait", "rarity"],
+  props: ["username", "avatarSize", "isPortrait", "rarity", "isRandomMode"],
   data() {
     return {
       validator: (x) => {
         parseInt(x) > 0;
       },
       status: "valid",
+      isRandomMode: this.isRandomMode,
       settingRarity: JSON.parse(JSON.stringify(this.rarity)),
       sum: 0,
       showModal: ref(false),

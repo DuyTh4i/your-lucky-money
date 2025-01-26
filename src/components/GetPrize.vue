@@ -4,7 +4,7 @@
         <span class="wish">{{ wish }}</span>
         <n-button
           @click="updateIsOpen()"
-          color="#ff69b4"
+          color="#ff1a1a"
           style="
             position: absolute;
             bottom: 7px;
@@ -179,9 +179,9 @@ export default {
   font-family: itim;
   font-size: 19.5px;
   position: absolute;
-  top: 20%;
+  top: 38%;
   left: 50%;
   transform: translateX(-50%);
-  color: rgb(196, 23, 23);
+  color: white;
 }
 </style>

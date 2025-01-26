@@ -1,8 +1,6 @@
 <template>
   <div id="footer">
     <div class="info">
-      <a href="https://www.facebook.com/DuyTh4i" target="_blank">ThaiDD</a
-      ><br />
       <span>dev.thaidd@gmail.com</span>
     </div>
   </div>
@@ -19,7 +17,7 @@
   text-align: center;
   color: white;
   font-size: 0.7rem;
-  font-family: 'something-strange';
+  /* font-family: 'something-strange'; */
 }
 a {
   color: white;

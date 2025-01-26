@@ -1,6 +1,7 @@
 <template>
   <div id="container" class="fullscreen">
     <TheRatingContainer
+      :isRandomMode="isRandomMode"
       :username="username"
       :isPortrait="isPortrait"
       :avatarSize="avatarSize"
@@ -47,6 +48,7 @@ export default {
   props: ["username", "isMuted"],
   data() {
     return {
+      isRandomMode: true,
       refreshStatus: true,
       avatarSize: "large",
       isPortrait: false,
@@ -58,110 +60,138 @@ export default {
           x: 0.5,
           y: 1.02,
           z: 1.9,
+          selected: false,
         },
         {
           x: -0.7,
           y: 1.17,
           z: 1.75,
+          selected: false,
         },
         {
           x: -1,
           y: 1.1,
           z: 1.1,
+          selected: false,
         },
         {
           x: -1.2,
           y: 0.86,
           z: 0.7,
+          selected: false,
         },
         {
           x: -0.95,
           y: 1.1,
           z: -0.3,
+          selected: false,
         },
         {
           x: -1.09,
           y: 0.88,
           z: -1.2,
+          selected: false,
         },
         {
           x: 0.25,
           y: 0.82,
           z: 1.73,
+          selected: false,
         },
         {
           x: 0.1,
           y: 0.57,
           z: 1.5,
+          selected: false,
         },
         {
           x: 0.2,
           y: -0.42,
           z: 0.15,
+          selected: false,
         },
         {
           x: 0.38,
           y: -0.6,
           z: -0.2,
+          selected: false,
         },
         {
           x: 0.58,
           y: -0.6,
           z: -0.7,
+          selected: false,
         },
         {
           x: -0.05,
           y: -0.35,
           z: -0.5,
+          selected: false,
         },
         {
           x: -0.1,
           y: -0.3,
           z: -0.9,
+          selected: false,
         },
         {
           x: -0.08,
           y: -0.3,
           z: -1.3,
+          selected: false,
         },
         {
           x: 0,
           y: -0.25,
           z: -1.7,
+          selected: false,
         },
         {
           x: -0.3,
           y: 0.29,
           z: -1.9,
+          selected: false,
         },
         {
           x: -0.55,
           y: 0.44,
           z: -2.2,
+          selected: false,
         },
         {
           x: 0.5,
           y: -0.2,
           z: -2.1,
+          selected: false,
         },
         {
           x: 0.85,
           y: -0.3,
           z: -2.5,
+          selected: false,
         },
         {
           x: 0.8,
           y: -0.18,
           z: -3,
+          selected: false,
         },
       ],
+      quantity: [
+        { prize: 10, amount: 1 },
+        { prize: 20, amount: 1 },
+        { prize: 50, amount: 1 },
+        { prize: 100, amount: 1 },
+        { prize: 200, amount: 1 },
+        { prize: 500, amount: 1 },
+      ],
       rarity: [
-        { prize: 50, rate: 55.4 },
-        { prize: 20, rate: 12 },
-        { prize: 10, rate: 12 },
-        { prize: 100, rate: 10 },
-        { prize: 200, rate: 0.3 },
-        { prize: 500, rate: 0.3 },
+        { prize: 50, rate: 75 },
+        { prize: 20, rate: 10 },
+        { prize: 10, rate: 2 },
+        { prize: 100, rate: 12.9 },
+        { prize: 200, rate: 0.1 },
+        { prize: 500, rate: 0 },
       ],
     };
   },
@@ -174,22 +204,22 @@ export default {
       this.itemGeo = new THREE.BoxGeometry(0.2, 0.35, 0.005);
       this.itemMat = [
         new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
+          color: 0x8a0d0d,
           transparent: true,
           opacity: 0,
         }),
         new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
+          color: 0x8a0d0d,
           transparent: true,
           opacity: 0,
         }),
         new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
+          color: 0x8a0d0d,
           transparent: true,
           opacity: 0,
         }),
         new THREE.MeshPhongMaterial({
-          color: 0xdb0614,
+          color: 0x8a0d0d,
           transparent: true,
           opacity: 0,
         }),
@@ -348,30 +378,78 @@ export default {
       if (this.envelopes.length > 0) {
         this.detachEnvelopes();
       }
-      setTimeout(() => {
-        this.coors.forEach((value) => {
-          const item = new THREE.Mesh(this.itemGeo, this.itemMat);
-          item.receiveShadow = true;
-          item.castShadow = true;
-          item.rotateY(Math.PI / 2);
-          item.position.set(value.x, value.y - 0.35, value.z);
-          item.userData.prize = this.gacha();
+      if (this.isRandomMode) {
+        setTimeout(() => {
+          this.coors.forEach((value) => {
+            const item = new THREE.Mesh(this.itemGeo, this.itemMat);
+            item.receiveShadow = true;
+            item.castShadow = true;
+            item.rotateY(Math.PI / 2);
+            item.position.set(value.x, value.y - 0.35, value.z);
+            item.userData.prize = this.gacha();
 
-          this.envelopes.push(item);
-          this.ribbons.push(
-            new THREE.Line(
-              new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(value.x, value.y, value.z),
-                new THREE.Vector3(value.x, value.y + this.pin, value.z),
-              ]),
-              this.ribbonMat
-            )
-          );
-        });
-        this.ribbons.forEach((rib) => this.scene.add(rib));
-        this.envelopes.forEach((env) => this.scene.add(env));
-        this.attachEnvelopes();
-      }, 1000);
+            this.envelopes.push(item);
+            this.ribbons.push(
+              new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                  new THREE.Vector3(value.x, value.y, value.z),
+                  new THREE.Vector3(value.x, value.y + this.pin, value.z),
+                ]),
+                this.ribbonMat
+              )
+            );
+          });
+          this.ribbons.forEach((rib) => this.scene.add(rib));
+          this.envelopes.forEach((env) => this.scene.add(env));
+          this.attachEnvelopes();
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          this.quantity.forEach((value) => {
+            for (let i = 0; i < value.amount; i++) {
+              let index = this.randomCoorIndex(0, 19);
+              while (this.coors.at(index).selected)
+                index = this.randomCoorIndex(0, 19);
+              const item = new THREE.Mesh(this.itemGeo, this.itemMat);
+              item.receiveShadow = true;
+              item.castShadow = true;
+              item.rotateY(Math.PI / 2);
+              item.position.set(
+                this.coors.at(index).x,
+                this.coors.at(index).y - 0.35,
+                this.coors.at(index).z
+              );
+              item.userData.prize = value.prize;
+              this.coors.at(index).selected = true;
+
+              this.envelopes.push(item);
+              this.ribbons.push(
+                new THREE.Line(
+                  new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(
+                      this.coors.at(index).x,
+                      this.coors.at(index).y,
+                      this.coors.at(index).z
+                    ),
+                    new THREE.Vector3(
+                      this.coors.at(index).x,
+                      this.coors.at(index).y + this.pin,
+                      this.coors.at(index).z
+                    ),
+                  ]),
+                  this.ribbonMat
+                )
+              );
+            }
+          });
+          this.ribbons.forEach((rib) => this.scene.add(rib));
+          this.envelopes.forEach((env) => this.scene.add(env));
+          this.attachEnvelopes();
+        }, 1000);
+      }
+    },
+    randomCoorIndex(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
     },
     animate() {
       if (
@@ -476,11 +554,13 @@ export default {
       });
     },
     changeRate(settingRarity) {
-      this.rarity = JSON.parse(JSON.stringify(settingRarity));
-      this.rarity.sort((a, b) => {
-        return b.rate - a.rate;
-      });
-      this.resetEnvelopes();
+      if (this.isRandomMode) {
+        this.rarity = JSON.parse(JSON.stringify(settingRarity));
+        this.rarity.sort((a, b) => {
+          return b.rate - a.rate;
+        });
+        this.resetEnvelopes();
+      }
     },
   },
   mounted() {
