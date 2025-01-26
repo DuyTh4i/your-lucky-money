@@ -121,21 +121,21 @@ export default {
       sum: 0,
       showModal: ref(false),
       options: [
-        {
-          label: this.username,
-          key: "username",
-          icon: this.renderIcon(UserIcon),
-        },
+        // {
+        //   label: this.username,
+        //   key: "username",
+        //   icon: this.renderIcon(UserIcon),
+        // },
         {
           label: "Cài đặt",
           key: "setting",
           icon: this.renderIcon(SettingIcon),
         },
-        {
-          label: "Đăng nhập",
-          key: "changeState",
-          icon: this.renderIcon(LoginIcon),
-        },
+        // {
+        //   label: "Đăng nhập",
+        //   key: "changeState",
+        //   icon: this.renderIcon(LoginIcon),
+        // },
       ],
     };
   },
