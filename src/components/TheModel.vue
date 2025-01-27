@@ -184,6 +184,7 @@ export default {
         { prize: 50, amount: 1 },
         { prize: 100, amount: 1 },
         { prize: 200, amount: 1 },
+        { prize: 300, amount: 1 },
         { prize: 500, amount: 1 },
       ],
       rarity: [
@@ -565,7 +566,7 @@ export default {
             this.boxHelper.visible = true;
             this.boxHelper.setFromObject(item);
           }
-          console.log(event.target.userData.prize);
+          // console.log(event.target.userData.prize);
         });
         this.interactionManager.add(item);
       });
