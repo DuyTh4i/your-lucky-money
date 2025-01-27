@@ -187,11 +187,11 @@ export default {
         { prize: 500, amount: 1 },
       ],
       rarity: [
-        { prize: 50, rate: 75 },
-        { prize: 20, rate: 10 },
-        { prize: 10, rate: 2 },
-        { prize: 100, rate: 12.9 },
-        { prize: 200, rate: 0.1 },
+        { prize: 50, rate: 60 },
+        { prize: 20, rate: 20 },
+        { prize: 10, rate: 19.9 },
+        { prize: 100, rate: 0.1 },
+        { prize: 200, rate: 0 },
         { prize: 500, rate: 0 },
       ],
     };
