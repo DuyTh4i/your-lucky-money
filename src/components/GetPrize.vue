@@ -177,11 +177,11 @@ export default {
 }
 .wish {
   font-family: itim;
-  font-size: 19.5px;
+  font-size: 17px;
   position: absolute;
-  top: 38%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  left: 40%;
+  transform: translateX(-55%);
   color: rgba(125, 25, 12, 1);
 }
 </style>
