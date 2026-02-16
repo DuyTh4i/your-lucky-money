@@ -182,6 +182,6 @@ export default {
   top: 38%;
   left: 50%;
   transform: translateX(-50%);
-  color: white;
+  color: rgba(125, 25, 12, 1);
 }
 </style>
